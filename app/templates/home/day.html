@@ -1,0 +1,114 @@
+{% extends('home/home.html') %}
+{% block css %}
+
+{% endblock %}
+{% block content %}
+    <div class="row">
+    <div class="col-md-8 col-sm-8 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Bar Graph</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Settings 1</a>
+                            </li>
+                            <li><a href="#">Settings 2</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+                <div id="mainb" style="height:350px;"></div>
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <!-- ECharts -->
+    <script src="{{ url_for('static',filename='vendors/echarts/dist/echarts.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            if ($('#mainb').length) {
+
+                var theme = init_echarts_theme();
+                var echartPie = echarts.init(document.getElementById('mainb'), theme);
+                echartPie.setOption({
+				tooltip: {
+				  trigger: 'item',
+				  formatter: "{a} <br/>{b} : {c} ({d}%)"
+				},
+				legend: {
+				  x: 'center',
+				  y: 'bottom',
+				  data: ['Direct Access', 'E-mail Marketing', 'Union Ad', 'Video Ads', 'Search Engine']
+				},
+				toolbox: {
+				  show: true,
+				  feature: {
+					magicType: {
+					  show: true,
+					  type: ['pie', 'funnel'],
+					  option: {
+						funnel: {
+						  x: '25%',
+						  width: '50%',
+						  funnelAlign: 'left',
+						  max: 1548
+						}
+					  }
+					},
+					restore: {
+					  show: true,
+					  title: "Restore"
+					},
+					saveAsImage: {
+					  show: true,
+					  title: "Save Image"
+					}
+				  }
+				},
+				calculable: true,
+				series: [{
+				  name: '访问来源',
+				  type: 'pie',
+				  radius: '55%',
+				  center: ['50%', '48%'],
+				  data: [{
+					value: 335,
+					name: 'Direct Access'
+				  }, {
+					value: 310,
+					name: 'E-mail Marketing'
+				  }, {
+					value: 234,
+					name: 'Union Ad'
+				  }, {
+					value: 135,
+					name: 'Video Ads'
+				  }, {
+					value: 1548,
+					name: 'Search Engine'
+				  }]
+				}]
+			  });
+
+            }
+            //init_echarts();
+        });
+    </script>
+
+{% endblock %}
