@@ -1,9 +1,9 @@
-{% extends('home/home.html') %}
+{% extends 'home/home.html' %}
 {% block css %}
 
 {% endblock %}
+
 {% block content %}
-    <div class="row">
     <div class="col-md-8 col-sm-8 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -38,76 +38,56 @@
 {% endblock %}
 
 {% block js %}
-    <!-- ECharts -->
-    <script src="{{ url_for('static',filename='vendors/echarts/dist/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/echarts/echarts.js') }}"></script>
     <script>
         $(document).ready(function () {
-            if ($('#mainb').length) {
+            console.log(111111);
+            option = {
+                color: ['#3398DB'],
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '直接访问',
+                        type: 'bar',
+                        barWidth: '60%',
+                        data: [10, 52, 200, 334, 390, 330, 220]
+                    }
+                ]
+            };
 
-                var theme = init_echarts_theme();
-                var echartPie = echarts.init(document.getElementById('mainb'), theme);
-                echartPie.setOption({
-				tooltip: {
-				  trigger: 'item',
-				  formatter: "{a} <br/>{b} : {c} ({d}%)"
-				},
-				legend: {
-				  x: 'center',
-				  y: 'bottom',
-				  data: ['Direct Access', 'E-mail Marketing', 'Union Ad', 'Video Ads', 'Search Engine']
-				},
-				toolbox: {
-				  show: true,
-				  feature: {
-					magicType: {
-					  show: true,
-					  type: ['pie', 'funnel'],
-					  option: {
-						funnel: {
-						  x: '25%',
-						  width: '50%',
-						  funnelAlign: 'left',
-						  max: 1548
-						}
-					  }
-					},
-					restore: {
-					  show: true,
-					  title: "Restore"
-					},
-					saveAsImage: {
-					  show: true,
-					  title: "Save Image"
-					}
-				  }
-				},
-				calculable: true,
-				series: [{
-				  name: '访问来源',
-				  type: 'pie',
-				  radius: '55%',
-				  center: ['50%', '48%'],
-				  data: [{
-					value: 335,
-					name: 'Direct Access'
-				  }, {
-					value: 310,
-					name: 'E-mail Marketing'
-				  }, {
-					value: 234,
-					name: 'Union Ad'
-				  }, {
-					value: 135,
-					name: 'Video Ads'
-				  }, {
-					value: 1548,
-					name: 'Search Engine'
-				  }]
-				}]
-			  });
 
+            if (option && typeof option === "object") {
+
+                var dom = document.getElementById("mainb");
+                var myChart = echarts.init(dom);
+                myChart.setOption(option, true);
             }
-            //init_echarts();
+
         });
     </script>
 
