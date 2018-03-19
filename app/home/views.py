@@ -7,11 +7,11 @@ __date__ = '2018年3月15日15:39:44'
 from . import home
 from app.home.forms import LoginForm
 from flask import render_template, url_for, redirect, flash, session, request, Response
-from app.models import Admin,Adminlog
+from app.models import Admin,Adminlog,Ref_producer,Tb_transaction_backup,NewTbModel
 from werkzeug.security import generate_password_hash
 from app import db, app,redis
 from functools import wraps
-
+import json
 
 #================公共函数================
 
@@ -22,7 +22,7 @@ def is_login_req(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user" not in session:
+        if "admin" not in session:
             return redirect(url_for("home.login", next=request.url))
         return f(*args, **kwargs)
 
@@ -35,8 +35,6 @@ def is_login_req(f):
 @home.route("/", methods=["GET"])
 @is_login_req
 def index():
-
-
     return render_template("home/index.html")
 
 
@@ -44,8 +42,26 @@ def index():
 @home.route("/day/", methods=["GET"])
 @is_login_req
 def day():
-
     return render_template("home/day.html")
+
+
+# 按天流水Ajax
+@home.route("/get_day_data/", methods=["POST"])
+def get_day_data():
+
+    # 查询数据 BEST数据表  SQLAlchemy中使用同一模型映射多个表
+    data = Ref_producer.query.all()
+    TbModel = NewTbModel(Tb_transaction_backup,'tb_transaction_backup_201703')
+    data = TbModel.query.limit(10)
+    for v in data:
+        print(v.shortcode)
+
+    data = dict(
+        static=200,
+        message='success'
+    )
+    
+    return json.dumps(data)
 
 
 

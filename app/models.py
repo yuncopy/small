@@ -2,9 +2,9 @@
 __author__ = 'Angela'
 __date__ = '2018年3月15日15:42:03'
 
-
 from datetime import datetime
 from app import db
+
 
 # 后台用户数据模型
 class Admin(db.Model):
@@ -34,7 +34,7 @@ class Adminlog(db.Model):
     admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))  # 所属管理员
     ip = db.Column(db.String(100))  # 登录IP
     create_time = db.Column(db.DateTime, index=True, default=datetime.now)  # 创建时间
-    update_time = db.Column(db.DateTime, index=True, default=datetime.now,onupdate = datetime.now)  # 修改时间
+    update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)  # 修改时间
 
     def __repr__(self):
         return "<Adminlog %r>" % self.id
@@ -55,7 +55,6 @@ class Actionlog(db.Model):
         return "<Oplog %r>" % self.id
 
 
-
 # 权限
 class Auth(db.Model):
     __tablename__ = "auth"
@@ -67,12 +66,11 @@ class Auth(db.Model):
     update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)  # 修改时间
     name_url_idx = db.UniqueConstraint('name', 'url', name='name_url_idx')
 
-
     def __repr__(self):
         return "<Auth %r>" % self.name
 
     # 检测密码是否正确
-    def check_pwd(self,pwd):
+    def check_pwd(self, pwd):
         from werkzeug.security import check_password_hash
         return check_password_hash(self.pwd, pwd)
 
@@ -92,13 +90,13 @@ class Role(db.Model):
         return "<Role %r>" % self.name
 
 
-
-#===============BEST======数据库模型=======
+# ===============BEST======数据库模型=======
 
 # 查询月备表
 class Tb_transaction_backup(db.Model):
     __bind_key__ = 'best'
-    __tablename__ = "tb_transaction_backup"
+    #__tablename__ = "tb_transaction_backup"
+    __abstract__ = True
     __table_args__ = {"useexisting": True}
     Id = db.Column(db.Integer, primary_key=True)  # 编号
     status = db.Column(db.String(8), nullable=True)
@@ -114,25 +112,52 @@ class Tb_transaction_backup(db.Model):
     operator_desc = db.Column(db.String(20), nullable=True)
     ccy = db.Column(db.String(20), nullable=True)
     telco_name = db.Column(db.String(50), nullable=True)
-    idx_tel_act= db.UniqueConstraint('telco_name', 'actiontype', name='idx_telcoName_actiontype')
+    idx_tel_act = db.UniqueConstraint('telco_name', 'actiontype', name='idx_telcoName_actiontype')
 
     def __repr__(self):
         return "<Tb_transaction_backup %r>" % self.name
 
 
+# 动态创建表名
+class NewTbModel(object):
+    """
+    动态产生模型和表的对应关系模型
+    eg:
+    '''
+    class TemplateModel(db.Model):
+        __abstract__ = True
+        id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
+
+    Test_2018 = NewDynamicModel(TemplateModel, 'tb_test_2017')
+    print Test_2018.query.all()
+    '''
+    """
+    _instance = dict()
+    def __new__(cls, base_cls, tb_name):
+        new_cls_name = "%s_To_%s" % (
+            base_cls.__name__, '_'.join(map(lambda x:x.capitalize(),tb_name.split('_'))))
+
+        if new_cls_name not in cls._instance:
+            model_cls = type(new_cls_name, (base_cls,),
+                             {'__tablename__': tb_name})
+            cls._instance[new_cls_name] = model_cls
+
+        return cls._instance[new_cls_name]
+
+
 # CP 信息表
 class Ref_producer(db.Model):
     __bind_key__ = 'best'
-    __tablename__ = "ref_producer_backup"
+    __tablename__ = "ref_producer"
     __table_args__ = {"useexisting": True}
-    producer_id = db.Column(db.Integer, primary_key=True,autoincrement = True)  # 编号
+    producer_id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # 编号
     producer_name = db.Column(db.String(50), nullable=True)
     callback = db.Column(db.String(150), nullable=True)
     md5Suf = db.Column(db.String(16), nullable=True)
     grade = db.Column(db.String(2), nullable=True)
+
     def __repr__(self):
         return "<ref_roducer %r>" % self.producer_id
-
 
 
 ''' 

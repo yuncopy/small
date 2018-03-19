@@ -91,4 +91,17 @@
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            {# 获取数据 #}
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('home.get_day_data') }}",
+                data: "name=John&location=Boston",
+                success: function (msg) {
+                   console.log(msg);
+                }
+            });
+        });
+    </script>
 {% endblock %}
