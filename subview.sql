@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50638
 File Encoding         : 65001
 
-Date: 2018-03-30 17:59:51
+Date: 2018-03-30 18:37:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,12 +20,12 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `actionlog`;
 CREATE TABLE `actionlog` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `admin_id` int(11) DEFAULT NULL,
-  `ip` varchar(100) DEFAULT NULL,
-  `reason` varchar(600) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `admin_id` int(11) DEFAULT NULL COMMENT '管理员ID',
+  `ip` varchar(100) DEFAULT NULL COMMENT 'IP地址',
+  `reason` varchar(600) DEFAULT NULL COMMENT '操作原因',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   KEY `ix_actionlog_create_time` (`create_time`),
@@ -42,11 +42,12 @@ CREATE TABLE `actionlog` (
 -- ----------------------------
 DROP TABLE IF EXISTS `admin`;
 CREATE TABLE `admin` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) DEFAULT NULL,
-  `pwd` varchar(100) DEFAULT NULL,
-  `role_id` int(11) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(100) DEFAULT NULL COMMENT '名称',
+  `pwd` varchar(100) DEFAULT NULL COMMENT '密码',
+  `role_id` int(11) DEFAULT NULL COMMENT '角色ID',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `role_id` (`role_id`),
@@ -57,17 +58,17 @@ CREATE TABLE `admin` (
 -- ----------------------------
 -- Records of admin
 -- ----------------------------
-INSERT INTO `admin` VALUES ('1', 'BluePay', 'pbkdf2:sha256:50000$uexmBXk8$f5d5e842cda8564c6a47ee12405c85c549b45c899c2057e6b0344568ad7e1e79', '1', '2018-03-15 17:10:05');
-INSERT INTO `admin` VALUES ('2', 'Blue', 'pbkdf2:sha256:50000$Q1PfCIux$b3274efe75097d006a8271bc074c683a74f73001a1aba265f9b783a3bb83ef4a', '1', '2018-03-28 17:16:28');
-INSERT INTO `admin` VALUES ('3', 'copy.chen', 'pbkdf2:sha256:50000$UNOwhNrD$c9b6da4e4f0800b5370d1f1b958e3a0be86b0c4a98a0ba7d923b2808da3444c6', '1', '2018-03-28 17:17:54');
-INSERT INTO `admin` VALUES ('4', 'anter', 'pbkdf2:sha256:50000$rxwIA197$ea3b4a366a231845cbf9ac3793f0d38cfc037564296b11e9e95e03763f86a47d', '1', '2018-03-28 17:18:52');
-INSERT INTO `admin` VALUES ('9', 'alvin', 'pbkdf2:sha256:50000$Ho2nkb0C$bc9392827c23ca349d66f38ab0c409ebf5b47ea6674d102f5fd89a2b10e9ef76', '1', '2018-03-28 17:26:24');
-INSERT INTO `admin` VALUES ('11', 'kun', 'pbkdf2:sha256:50000$jx3qbufq$a9b375d75bf83867b09b6fab98310ae6c244930b1b51accc3a4856c1b2ae85c3', '1', '2018-03-28 17:26:55');
-INSERT INTO `admin` VALUES ('12', 'yong', 'pbkdf2:sha256:50000$ywynMuzK$153b7a0018ad03d537086a64194e50f023ec83051afe485a2de2877d49128d1b', '1', '2018-03-28 17:27:31');
-INSERT INTO `admin` VALUES ('13', 'angela', 'pbkdf2:sha256:50000$yP6V0YZl$3f0fd8b6ecad024feb9033d4e3c1db44ea28097f70131eb49227e85df505a7b9', '1', '2018-03-28 17:27:47');
-INSERT INTO `admin` VALUES ('14', 'wang', 'pbkdf2:sha256:50000$t5WG0J2e$00985327978ba918f65e115b0cd955e44ae71db7721575bfd55a32fe90408f30', '1', '2018-03-28 17:27:58');
-INSERT INTO `admin` VALUES ('15', 'renyu', 'pbkdf2:sha256:50000$Nmw2ZL8X$2c02f42a9efc3f16054f92847158ccbba922fa8f31ff48c3ed9209e0447b0396', '1', '2018-03-28 17:29:47');
-INSERT INTO `admin` VALUES ('16', 'local2', 'pbkdf2:sha256:50000$aFfL8ITe$ca9b383f4818d2a4ee55568a2330af6473fc1fab42cc0898dbb3b2eada881198', '2', '2018-03-28 17:30:20');
+INSERT INTO `admin` VALUES ('1', 'BluePay', 'pbkdf2:sha256:50000$uexmBXk8$f5d5e842cda8564c6a47ee12405c85c549b45c899c2057e6b0344568ad7e1e79', '1', '2018-03-15 17:10:05', null);
+INSERT INTO `admin` VALUES ('2', 'Blue', 'pbkdf2:sha256:50000$Q1PfCIux$b3274efe75097d006a8271bc074c683a74f73001a1aba265f9b783a3bb83ef4a', '1', '2018-03-28 17:16:28', null);
+INSERT INTO `admin` VALUES ('3', 'copy.chen', 'pbkdf2:sha256:50000$UNOwhNrD$c9b6da4e4f0800b5370d1f1b958e3a0be86b0c4a98a0ba7d923b2808da3444c6', '1', '2018-03-28 17:17:54', null);
+INSERT INTO `admin` VALUES ('4', 'anter', 'pbkdf2:sha256:50000$rxwIA197$ea3b4a366a231845cbf9ac3793f0d38cfc037564296b11e9e95e03763f86a47d', '1', '2018-03-28 17:18:52', null);
+INSERT INTO `admin` VALUES ('9', 'alvin', 'pbkdf2:sha256:50000$Ho2nkb0C$bc9392827c23ca349d66f38ab0c409ebf5b47ea6674d102f5fd89a2b10e9ef76', '1', '2018-03-28 17:26:24', null);
+INSERT INTO `admin` VALUES ('11', 'kun', 'pbkdf2:sha256:50000$jx3qbufq$a9b375d75bf83867b09b6fab98310ae6c244930b1b51accc3a4856c1b2ae85c3', '1', '2018-03-28 17:26:55', null);
+INSERT INTO `admin` VALUES ('12', 'yong', 'pbkdf2:sha256:50000$ywynMuzK$153b7a0018ad03d537086a64194e50f023ec83051afe485a2de2877d49128d1b', '1', '2018-03-28 17:27:31', null);
+INSERT INTO `admin` VALUES ('13', 'angela', 'pbkdf2:sha256:50000$yP6V0YZl$3f0fd8b6ecad024feb9033d4e3c1db44ea28097f70131eb49227e85df505a7b9', '1', '2018-03-28 17:27:47', null);
+INSERT INTO `admin` VALUES ('14', 'wang', 'pbkdf2:sha256:50000$t5WG0J2e$00985327978ba918f65e115b0cd955e44ae71db7721575bfd55a32fe90408f30', '1', '2018-03-28 17:27:58', null);
+INSERT INTO `admin` VALUES ('15', 'renyu', 'pbkdf2:sha256:50000$Nmw2ZL8X$2c02f42a9efc3f16054f92847158ccbba922fa8f31ff48c3ed9209e0447b0396', '1', '2018-03-28 17:29:47', null);
+INSERT INTO `admin` VALUES ('16', 'local2', 'pbkdf2:sha256:50000$aFfL8ITe$ca9b383f4818d2a4ee55568a2330af6473fc1fab42cc0898dbb3b2eada881198', '2', '2018-03-28 17:30:20', null);
 
 -- ----------------------------
 -- Table structure for adminlog
@@ -77,14 +78,14 @@ CREATE TABLE `adminlog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `admin_id` int(11) DEFAULT NULL,
   `ip` varchar(100) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `admin_id` (`admin_id`),
   KEY `ix_adminlog_create_time` (`create_time`),
   KEY `ix_adminlog_update_time` (`update_time`),
   CONSTRAINT `adminlog_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admin` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of adminlog
@@ -107,6 +108,7 @@ INSERT INTO `adminlog` VALUES ('15', '1', '127.0.0.1', '2018-03-29 09:03:29', '2
 INSERT INTO `adminlog` VALUES ('16', '1', '127.0.0.1', '2018-03-29 11:44:59', '2018-03-29 11:44:59');
 INSERT INTO `adminlog` VALUES ('17', '1', '127.0.0.1', '2018-03-29 11:47:17', '2018-03-29 11:47:17');
 INSERT INTO `adminlog` VALUES ('18', '1', '127.0.0.1', '2018-03-29 11:47:46', '2018-03-29 11:47:46');
+INSERT INTO `adminlog` VALUES ('19', '1', '127.0.0.1', '2018-03-30 18:34:15', '2018-03-30 18:34:15');
 
 -- ----------------------------
 -- Table structure for auth
@@ -116,7 +118,7 @@ CREATE TABLE `auth` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),

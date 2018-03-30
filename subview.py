@@ -10,5 +10,5 @@ from app.home.jobs import jobs
 
 manage = Manager(app)
 if __name__ == "__main__":
-    #jobs(app)
+    jobs(app)
     manage.run()
