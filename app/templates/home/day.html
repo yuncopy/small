@@ -1,13 +1,18 @@
 {% extends 'home/home.html' %}
 {% block css %}
+    <!-- bootstrap-daterangepicker -->
+    <link href="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}"
+          rel="stylesheet">
+    <!-- Select2 -->
+    <link href="{{ url_for('static',filename='vendors/select2/dist/css/select2.min.css') }}" rel="stylesheet">
 
 {% endblock %}
 
 {% block content %}
-    <div class="col-md-8 col-sm-8 col-xs-12">
+    <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Bar Graph</h2>
+                <h2>按天流水</h2>
                 <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
@@ -27,81 +32,257 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
+                <form class="form-inline" id="form_search">
+                    <div class="form-group">
+                        <div class="control-group">
+                            <div class="controls">
+                                <div class="input-prepend input-group" style="margin-top: 10px;">
+                                    <span class="add-on input-group-addon"><i
+                                            class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    <input type="text" name="time_month" id="time_month" class="form-control"
+                                           value="01/01/2016 - 01/25/2016"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select id="business" name="business" class="form-control" tabindex="-1">
+                            <option value="">全部场景</option>
+                            <option value="game">游戏</option>
+                            <option value="sub">订阅</option>
+                            <option value="locan">放款</option>
+                            <option value="receive">收款</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="cp_sp" name="producer_id" class="form-control" tabindex="-1">
+                            <optgroup label="CP">
+                                <option value="">全部CP/SP</option>
+                                {% for v in search_data['cp'] %}
+                                    <option value="{{ v.producer_id }}">{{ v.producer_name }} [ {{ v.producer_id }} ]
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="SP">
+                                {% for v in search_data['sp'] %}
+                                    <option value="{{ v.producer_id }}">{{ v.producer_name }} [ {{ v.producer_id }} ]
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
 
+                    <div class="form-group">
+                        <select id="cp_sp_p" name="product_id" class="form-control" tabindex="-1">
+                            <optgroup label="CP_产品">
+                                <option value="">全部产品</option>
+                                {% for v in search_data['cpp'] %}
+                                    <option value="{{ v.product_id }}">{{ v.product_name }} [ {{ v.product_id }}] -
+                                        [{{ v.producer_name }}]
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="SP_产品">
+                                {% for v in search_data['spp'] %}
+                                    <option value="{{ v.product_id }}">{{ v.product_name }} [ {{ v.product_id }}] -
+                                        [{{ v.producer_name }}]
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <button type="button" id="form_btn" style="margin-top: 5px;" class="btn btn-round btn-primary">查询
+                    </button>
+                </form>
+                <div class="ln_solid"></div>
                 <div id="mainb" style="height:350px;"></div>
-
             </div>
         </div>
     </div>
 
 
+
 {% endblock %}
 
 {% block js %}
+    <!-- echarts -->
     <script src="{{ url_for('static',filename='vendors/echarts/echarts.js') }}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+
+    <!-- Select2 -->
+    <script src="{{ url_for('static',filename='vendors/select2/dist/js/select2.full.min.js') }}"></script>
+
+
+
     <script>
         $(document).ready(function () {
-            console.log(111111);
-            option = {
-                color: ['#3398DB'],
+
+            //============时间组件==============
+            if (typeof ($.fn.daterangepicker) === 'undefined') {
+                return;
+            }
+            console.log('init_daterangepicker_time_month');
+
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+
+            function cb(start, end) {
+                $('#time_month span').html(
+                    //start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')
+                );
+            }
+
+            $('#time_month').daterangepicker({
+                startDate: start,
+                endDate: end,
+                locale: {
+                    format: "YYYY-MM-DD",
+                    separator: " ~ ",
+                    applyLabel: "确定",
+                    cancelLabel: "取消"
+                }
+            }, cb);
+            cb(start, end);
+
+            // ==============下拉选择====组件====
+            $('#cp_sp').select2(); // cp_sp
+            $('#cp_sp_p').select2(); // cp_sp
+
+
+            // 图表
+            var option = {
+                title: {
+                    text: '按天趋势'
+                },
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    axisPointer: {
+                        type: 'cross',
+                        crossStyle: {
+                            color: '#999'
+                        }
                     }
                 },
-                grid: {
-                    left: '3%',
-                    right: '4%',
-                    bottom: '3%',
-                    containLabel: true
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                 grid: {
+                     top:'25%',
+                     left: '1%',
+                     right: '1%',
+                     bottom: '1%',
+                     containLabel: true
+
+                },
+                legend: {
+                    data: ['流水额', '交易量']
                 },
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        axisTick: {
-                            alignWithLabel: true
+                        data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                        axisPointer: {
+                            type: 'shadow'
                         }
                     }
                 ],
                 yAxis: [
                     {
-                        type: 'value'
+                        type: 'value',
+                        name: '流水额 (USD)',
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '交易量 (次数)',
+                        axisLabel: {
+                            formatter: '{value}'
+                        }
                     }
                 ],
                 series: [
                     {
-                        name: '直接访问',
+                        name: '流水额',
                         type: 'bar',
-                        barWidth: '60%',
-                        data: [10, 52, 200, 334, 390, 330, 220]
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'inside',
+                                rotate: 90
+                            }
+                        },
+                        data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                    },
+                    {
+                        name: '交易量',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
                     }
                 ]
             };
 
+            console.log(option)
 
-            if (option && typeof option === "object") {
-
+            var search_chart = function () {
                 var dom = document.getElementById("mainb");
+                var tt = 0;
+                var nn = 0;
                 var myChart = echarts.init(dom);
-                myChart.setOption(option, true);
-            }
+                var data_form = $('#form_search').serialize();
+                var xAxis_data = new Array();
+                var yAxis_amount = new Array();
+                var yAxis_num = new Array();
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url_for('home.get_day_data') }}",
+                    data: data_form,
+                    dataType:"json",
+                    beforeSend: function () {
+                        myChart.showLoading();
+                    },
+                    success: function (msg) {
+                        console.log(msg);
+                        $.each(msg,function (index,value) {
+                            xAxis_data.push(index);
+                            yAxis_amount.push(value.t.toFixed(2));
+                            yAxis_num.push(value.n)
+                            nn += parseInt(value.n);
+                            tt += parseFloat(value.t);
+                        });
 
-        });
-    </script>
+                        console.log(xAxis_data);
+                        option.xAxis[0].data =xAxis_data;
+                        option.series[0].data =yAxis_amount;
+                        option.series[1].data =yAxis_num;
+                        option.title.subtext = '(总额：'+tt+' 总量：'+ nn+ ')';
+                        if (option && typeof option === "object") {
+                            myChart.setOption(option, true);
+                        }
+                    },
+                    complete: function () {
+                        myChart.hideLoading();
+                    }
+                });
 
-    <script>
-        $(document).ready(function () {
-            {# 获取数据 #}
-            $.ajax({
-                type: "POST",
-                url: "{{ url_for('home.get_day_data') }}",
-                data: "name=John&location=Boston",
-                success: function (msg) {
-                   console.log(msg);
-                }
+            };
+
+            search_chart();
+            $('#form_btn').click(function () {
+                search_chart();
             });
+
         });
     </script>
+
 {% endblock %}

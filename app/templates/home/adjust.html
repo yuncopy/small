@@ -1,0 +1,304 @@
+{% extends 'home/home.html' %}
+{% block css %}
+    <!-- bootstrap-daterangepicker -->
+    <link href="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}"
+          rel="stylesheet">
+    <!-- Datatables -->
+    <link href="{{ url_for('static',filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}"
+          rel="stylesheet">
+    <!-- bootstrap-daterangepicker -->
+    <link href="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}"
+          rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>调整收入</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Settings 1</a>
+                            </li>
+                            <li><a href="#">Settings 2</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form class="form-inline" id="search">
+                    <div class="form-group">
+                        <div class="control-group">
+                            <div class="controls">
+                                <div class="input-prepend input-group" style="margin-top: 10px;">
+                                    <span class="add-on input-group-addon"><i
+                                            class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    <input type="text" name="time_month" id="time_month" class="form-control"
+                                           value="01/01/2016 - 01/25/2016"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select id="income" name="income" class="form-control" tabindex="-1">
+                            <option value="sub">调整按次</option>
+                            <option value="shelve">调整留存数</option>
+                            <option value="trs">调整留存收入</option>
+                            <option value="pay">补发收入</option>
+                            <option value="everworks">EverWorks优化</option>
+                            <option value="idr">印尼优化收入</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="but_search" style="margin-top: 5px;" class="btn btn-round btn-primary">
+                        查询
+                    </button>
+                </form>
+                <div class="ln_solid"></div>
+                <div id="mainb" style="height:350px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="dataTable_row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>查询结果</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table id="datatable" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>运营商</th>
+                            <th>SP名称</th>
+                            <th>短码</th>
+                            <th>币种</th>
+                            <th>金额</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td colspan="6">查询数据</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block js %}
+    <!-- echarts -->
+    <script src="{{ url_for('static',filename='vendors/echarts/echarts.js') }}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+
+
+    <!-- Datatables -->
+    <script src="{{ url_for('static',filename='vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            //============时间组件==============
+            if (typeof ($.fn.daterangepicker) === 'undefined') {
+                return;
+            }
+            console.log('init_daterangepicker_time_month');
+
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+
+            function cb(start, end) {
+                $('#time_month span').html(
+                    //start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY')
+                );
+            }
+
+            $('#time_month').daterangepicker({
+                startDate: start,
+                endDate: end,
+                locale: {
+                    format: "YYYY-MM-DD",
+                    separator: " ~ ",
+                    applyLabel: "确定",
+                    cancelLabel: "取消"
+                }
+            }, cb);
+            cb(start, end);
+
+
+            // 图形
+            var option = {
+                title: {
+                    text: '堆叠区域图'
+                },
+                color: ['#3398DB'],
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data: ['收入']
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        axisTick: {
+                            alignWithLabel: true
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '直接访问',
+                        type: 'bar',
+                        barWidth: '60%',
+                        label: {
+                            normal: {
+                                show: true,
+                                position: 'inside',
+                                rotate: 90
+                            }
+                        },
+                        data: [10, 52, 200, 334, 390, 330, 220]
+                    }
+                ]
+            };
+
+            var serach_data_func = function () {
+
+                var dom = document.getElementById("mainb");
+                var tt = 0;
+                var myChart = echarts.init(dom);
+                if (option && typeof option === "object") {
+                    var search_data = $('#search').serialize();
+                    var xAxis_data = [];
+                    var yAxis_data = [];
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ url_for('home.get_adjust_data') }}",
+                        data: search_data,
+                        dataType: "json",
+                        async:true,
+                        beforeSend: function () {
+                            myChart.showLoading();
+                        },
+                        success: function (msg) {
+                            $.each(msg, function (index, value) {
+                                xAxis_data.push(index);
+                                yAxis_data.push(value.toFixed(2));
+                                tt += parseFloat(value);
+                            });
+                            option.xAxis[0].data = xAxis_data;
+                            option.series[0].data = yAxis_data;
+                            option.title.text = $("#income option:selected").text();
+                            option.title.subtext= '总额：'+tt.toFixed(2)
+
+                            myChart.setOption(option, true);
+                        },
+                        complete: function () {
+                           myChart.hideLoading();
+                        }
+                    });
+                }
+
+            };
+
+
+            // 表格内容
+            var serach_datatable_func = function () {
+
+                var time_month = $('#time_month').val();
+                var income = $('#income').val();
+
+                $('#datatable').dataTable({
+                    "processing": false,    // 显示加载进度
+                    "serverSide": true,  // 开启服务端请求
+                    "info": false,
+                    "pageLength": 10,
+                    "searching": false,
+                    "lengthChange": false,  // 关闭自定义显示页数
+                    "destroy": true,
+                    "order": [[ 0, "desc" ]], // 排序
+                     "ajax": {
+                         "url": "{{ url_for('home.adjust') }}",
+                         "method": "POST",
+                         "async": true,
+                         "data": function (data) {
+                             data.time_month = $.trim(time_month);
+                             data.income = $.trim(income);
+                             return data
+                         },
+                         "beforeSend":function () {
+
+                         },
+                         "complete":function () {
+
+                         }
+                     },
+                     "columns": [
+                         {data: 'create_time'},
+                         {data: 'telco_name'},
+                         {data: 'producer_id',"render":function (data, type, full, meta) {
+                             var btn = full.producer_name+' ['+data+']';
+                             return btn;
+                            }
+                         },
+                         {data: 'shortcode'},
+                         {data: 'ccy'},
+                         {data: 'total'}
+                     ]
+
+                });
+            };
+
+            serach_data_func(); // 默认
+            serach_datatable_func(); // 表格
+            $('#but_search').click(function () {
+                serach_data_func();
+                serach_datatable_func(); // 表格
+            });
+
+
+        });
+    </script>
+
+
+{% endblock %}

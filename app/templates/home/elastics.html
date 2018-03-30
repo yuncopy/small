@@ -1,0 +1,212 @@
+{% extends 'home/home.html' %}
+{% block css %}
+
+    <!-- Datatables -->
+    <link href="{{ url_for('static',filename='vendors/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+   <!-- bootstrap-daterangepicker -->
+    <link href="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.css') }}" rel="stylesheet">
+    <!-- iCheck -->
+    <link href="{{ url_for('static',filename='vendors/iCheck/skins/flat/green.css') }}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>ES查询</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Settings 1</a>
+                            </li>
+                            <li><a href="#">Settings 2</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+                <form class="form-inline" id="search">
+                    <div class="form-group">
+                        <select id="time_filed_useed" name="time_filed_useed" class="form-control" tabindex="-1">
+                            <option value="1">精准查询</option>
+                            <option value="2">范围查询</option>
+                        </select>
+                    </div>
+                    <div class="form-group" >
+                        <div class="control-group" >
+                            <div class="controls" id="used_date" style="display: none;">
+                                <div class="input-prepend input-group" style="margin-top: 10px;">
+                                    <span class="add-on input-group-addon"><i
+                                            class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+                                    <input type="text" name="time_month" id="time_month" class="form-control"
+                                           value="01/01/2016 - 01/25/2016"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select id="search_filed" name="search_filed" class="form-control" tabindex="-1">
+                            <option value="msisdn">手机号</option>
+                            <option value="transactionid">交易ID</option>
+                            <option value="shortcode">PaymentCode</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="control-group">
+                            <input type="text" id="input_search" class="form-control" placeholder="请输入查询值">
+                        </div>
+                    </div>
+                    <button type="button" id="but_search" style="margin-top: 5px;" class="btn btn-round btn-primary">
+                        查询
+                    </button>
+                </form>
+                <div class="ln_solid"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row"  id="dataTable_row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>查询结果</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <p class="text-muted font-13 m-b-30">
+                        数据为ES 原始数据 <code>币种是THB，MYR，真实价格=数据库价格/100</code>
+                    </p>
+                    <table id="datatable" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>create_time</th>
+                            <th>status</th>
+                            <th>transactionid</th>
+                            <th>shortcode</th>
+                            <th>actiontype</th>
+                            <th>currency</th>
+                            <th>msisdn</th>
+                            <th>price</th>
+                            <th>producer_id</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr >
+                                <td colspan="9">查询数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <!-- Datatables -->
+    <script src="{{ url_for('static',filename='vendors/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#time_filed_useed').change(function () {
+                var used = $(this).val()
+                if(parseInt(used) == 1){
+                    $('#used_date').hide();
+                }else if(parseInt(used) == 2){
+                    $('#used_date').show();
+                }
+            });
+
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+            function cb(start, end) {
+
+            }
+
+            $('#time_month').daterangepicker({
+                startDate: start,
+                endDate: end,
+                locale: {
+                    format: "YYYY-MM-DD",
+                    separator: " ~ ",
+                    applyLabel: "确定",
+                    cancelLabel: "取消"
+                }
+            }, cb);
+            cb(start, end);
+
+            var dataTableFunc = function (input_filed,input_value,input_time,time_filed_useed) {
+                $('#datatable').dataTable({
+                    "processing": false,    // 显示加载进度
+                    "serverSide": true,  // 开启服务端请求
+                    "info": false,
+                    "pageLength": 20,
+                    "searching": false,
+                    "lengthChange": false,  // 关闭自定义显示页数
+                    "destroy": true,
+                    "order": [[ 0, "desc" ]], // 排序
+                     "ajax": {
+                         "url": "{{ url_for('home.elastics') }}",
+                         "method": "POST",
+                         "data": function(data){
+                             data.filed=$.trim(input_filed);
+                             data.value=$.trim(input_value);
+                             data.time=$.trim(input_time);
+                             data.query=$.trim(time_filed_useed)
+                             return data
+                         },
+                         "beforeSend":function () {
+                             if(input_value.length == 0){
+                                 return false;
+                             }
+                         },
+                         "complete":function () {
+
+                         }
+                     },
+                     "columns": [
+                         {data: 'create_time'},
+                         {data: 'status'},
+                         {data: 'transactionid'},
+                         {data: 'shortcode'},
+                         {data: 'actiontype'},
+                         {data: 'currency'},
+                         {data: 'msisdn'},
+                         {data: 'price'},
+                         {data: 'producer_id'}
+                     ]
+
+                });
+            };
+
+
+
+            $('#but_search').click(function () {
+                var filed = $('#search_filed').val();
+                var value = $('#input_search').val();
+                var time_str = $('#time_month').val();
+                var time_filed_useed = $('#time_filed_useed').val();
+                dataTableFunc(filed,value,time_str,time_filed_useed)
+            });
+
+
+        });
+    </script>
+
+
+{% endblock %}

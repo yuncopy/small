@@ -1,12 +1,143 @@
 {% extends('home/home.html') %}
 {% block css %}
-
+    <style>
+    table.table th,table.table td {
+        text-align: center;
+        height: 40px;
+    }
+    </style>
 {% endblock %}
 {% block content %}
-   chrage
+    <!-- page content -->
+    <div class="row">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>关注流水</h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#">Settings 1</a>
+                                    </li>
+                                    <li><a href="#">Settings 2</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a class="close-link"><i class="fa fa-close"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-12 col-xs-12 mail_list_column">
+                                <a href="#">
+                                    <div class="mail_list">
+                                        <div class="left"><i class="fa fa-circle"></i></div>
+                                        <div class="right"><h3>重点关注</h3></div>
+                                    </div>
+                                </a>
 
+                                <a href="{{ url_for('home.charge') }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 0 %}<span class="glyphicon glyphicon-ok"></span> {% endif %}  按天流水</a>
+                                <a href="{{ url_for('home.charge',cp=15) }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 15 %} <span class="glyphicon glyphicon-ok"></span> {% endif %} Kunlun</a>
+                                <a href="{{ url_for('home.charge',cp=2) }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 2 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Boyaa</a>
+                                <a href="{{ url_for('home.charge',cp=16) }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 16 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} YeahMobi</a>
+                                <a href="{{ url_for('home.charge',cp=274) }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 274 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Mobvista</a>
+                                <a href="{{ url_for('home.charge',cp=62) }}" class="btn btn-sm btn-success btn-block" type="button">
+                                    {% if  selected == 62 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Panshi</a>
+                                <div class="mail_list"></div>
+
+
+                                <a href="#">
+                                    <div class="mail_list">
+                                        <div class="left"><i class="fa fa-circle"></i></div>
+                                        <div class="right"><h3>流水情况</h3></div>
+                                    </div>
+                                </a>
+                                <a href="{{ url_for('home.charge',ccy='MYR') }}" class="btn btn-sm btn-primary btn-block" type="button">
+                                    {% if  selected == 'MYR' %}<span class="glyphicon glyphicon-ok"></span> {% endif %} 马来订阅</a>
+                                <a href="{{ url_for('home.charge',ccy='IDR') }}" class="btn btn-sm btn-primary btn-block" type="button">
+                                    {% if  selected == 'IDR' %}<span class="glyphicon glyphicon-ok"></span> {% endif %} 印尼订阅</a>
+                                <a href="{{ url_for('home.charge',ccy='VND') }}" class="btn btn-sm btn-primary btn-block" type="button">
+                                    {% if  selected == 'VND' %}<span class="glyphicon glyphicon-ok"></span> {% endif %} 越南订阅</a>
+                                <div class="mail_list"></div>
+
+
+                                <a href="#">
+                                    <div class="mail_list">
+                                        <div class="left"><i class="fa fa-circle"></i></div>
+                                        <div class="right"><h3>订阅业务</h3></div>
+                                    </div>
+                                </a>
+                                <a href="{{ url_for('home.charge',sp=16) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 16 and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Yeahmobi 订阅</a>
+                                <a href="{{ url_for('home.charge',sp=62) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 62 and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Panshi 订阅</a>
+                                <a href="{{ url_for('home.charge',sp=3) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 3 and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} ETE 订阅</a>
+                                <a href="{{ url_for('home.charge',sp=617) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 617 and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} GIANT PEAK 订阅</a>
+                                <a href="{{ url_for('home.charge',sp=274) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 274 and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} Mobvista 订阅</a>
+                                <a href="{{ url_for('home.charge',sp=205) }}" class="btn btn-sm btn-info btn-block" type="button">
+                                    {% if  selected == 205  and spp== 1 %}<span class="glyphicon glyphicon-ok"></span> {% endif %} ETC 订阅</a>
+                                <div class="mail_list"></div>
+
+
+                            </div>
+                            <!-- /MAIL LIST -->
+
+                            <!-- CONTENT MAIL -->
+                            <div class="col-md-9 col-sm-9 col-xs-12 mail_view">
+                                <div class="inbox-body">
+                                    <div class="view-mail">
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="x_panel">
+                                                <div class="x_content">
+                                                    <table class="table table-bordered">
+                                                        <thead><tr><th>序号</th><th>时间</th><th>流水量</th></tr></thead>
+                                                        <tbody>
+                                                        {%  for v in data_out %}
+                                                        <tr>
+                                                            <th scope="row">{{ loop.index }}</th>
+                                                            <td>{{ v }}</td>
+                                                            <td>{{ data_out[v] | round(2, 'floor')}}</td>
+                                                        </tr>
+                                                        {%   endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- /CONTENT MAIL -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /page content -->
 {% endblock %}
 
 {% block js %}
+<script>
+    $(document).ready(function () {
 
+    });
+</script>
 {% endblock %}

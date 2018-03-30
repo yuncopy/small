@@ -95,7 +95,7 @@ class Role(db.Model):
 # 查询月备表
 class Tb_transaction_backup(db.Model):
     __bind_key__ = 'best'
-    #__tablename__ = "tb_transaction_backup"
+    __tablename__ = "tb_transaction_backup"
     __abstract__ = True
     __table_args__ = {"useexisting": True}
     Id = db.Column(db.Integer, primary_key=True)  # 编号
@@ -103,7 +103,7 @@ class Tb_transaction_backup(db.Model):
     price = db.Column(db.String(12), nullable=True)
     promotion_id = db.Column(db.String(8), nullable=True)
     product_id = db.Column(db.String(12), nullable=True)
-    producer_id = db.Column(db.String(12), nullable=True)
+    producer_id = db.Column(db.String(12),nullable=True,)
     operator_id = db.Column(db.String(4), nullable=True)
     actiontype = db.Column(db.String(5), nullable=True)
     shortcode = db.Column(db.String(50), nullable=True)
@@ -114,8 +114,10 @@ class Tb_transaction_backup(db.Model):
     telco_name = db.Column(db.String(50), nullable=True)
     idx_tel_act = db.UniqueConstraint('telco_name', 'actiontype', name='idx_telcoName_actiontype')
 
+
+
     def __repr__(self):
-        return "<Tb_transaction_backup %r>" % self.name
+        return "<Tb_transaction_backup %r>" % self.Id
 
 
 # 动态创建表名
@@ -157,8 +159,160 @@ class Ref_producer(db.Model):
     grade = db.Column(db.String(2), nullable=True)
 
     def __repr__(self):
-        return "<ref_roducer %r>" % self.producer_id
+        return "<Ref_producer %r>" % self.producer_id
 
+
+# 产品 信息表
+class Product_info(db.Model):
+    __bind_key__ = 'best'
+    __tablename__ = "product_info"
+    __table_args__ = {"useexisting": True}
+    product_id = db.Column(db.Integer, primary_key=True)  # 编号
+    producer_id = db.Column(db.Integer)
+    product_alias = db.Column(db.String(120), nullable=True)
+    product_name = db.Column(db.String(32), nullable=True)
+    product_lastupdatetime = db.Column(db.DateTime, nullable=False,default=datetime.now,onupdate=datetime.now)
+    product_shortname = db.Column(db.String(12), nullable=True)
+    daily_limit = db.Column(db.Integer, nullable=False,default=1500)
+    monthly_limit = db.Column(db.Integer, nullable=False, default=9000)
+    limitType = db.Column(db.SmallInteger, nullable=False,default=1)
+    amountLimitType = db.Column(db.SmallInteger, nullable=False,default=2)
+    product_desc = db.Column(db.String(12), nullable=True)
+    product_category = db.Column(db.String(10), nullable=True)
+    product_icon = db.Column(db.String(50), nullable=True)
+    product_screenshot1 = db.Column(db.String(50), nullable=False,default='')
+    product_screenshot2 = db.Column(db.String(50), nullable=False,default='')
+    product_screenshot3 = db.Column(db.String(50), nullable=False,default='')
+    product_screenshot4 = db.Column(db.String(50), nullable=False,default='')
+    product_screenshot5 = db.Column(db.String(50), nullable=False,default='')
+    product_downloadUrl = db.Column(db.String(120), nullable=False,default='')
+    product_type = db.Column(db.Integer, nullable=True)
+    product_pkgSize = db.Column(db.Integer, nullable=True)
+    product_rating = db.Column(db.Float, nullable=True)
+    product_downloadType = db.Column(db.Integer, nullable=True)
+    product_status = db.Column(db.Integer, nullable=True)
+    product_subscribeable = db.Column(db.Integer, nullable=True)
+    product_rss = db.Column(db.Integer, nullable=True)
+    product_createTime = db.Column(db.DateTime, nullable=True)
+    notify_url = db.Column(db.String(150), nullable=True)
+    sender = db.Column(db.String(50), nullable=True)
+    product_applyTime = db.Column(db.DateTime, nullable=True)
+    counts_limit = db.Column(db.Integer, nullable=True)
+    money_limit = db.Column(db.Integer, nullable=True)
+    chanel_type = db.Column(db.Integer, nullable=True)
+    one_key_pay = db.Column(db.Integer, nullable=True)
+    is_game = db.Column(db.Integer, nullable=True)
+    th_daily_limit = db.Column(db.Integer, nullable=True)
+    th_monthly_limit = db.Column(db.Integer, nullable=True)
+    vn_daily_limit = db.Column(db.Integer, nullable=True)
+    vn_monthly_limit = db.Column(db.Integer, nullable=True)
+    id_daily_limit = db.Column(db.Integer, nullable=True)
+    id_monthly_limit = db.Column(db.Integer, nullable=True)
+
+
+    def __repr__(self):
+        return "<Product_info %r>" % self.product_id
+
+
+
+# CDR表
+class Cdr_file(db.Model):
+    __bind_key__ = 'best'
+    __tablename__ = "cdr_file"
+    __table_args__ = {"useexisting": True}
+    Id = db.Column(db.String(25), primary_key=True, autoincrement=True)  # 编号
+    status = db.Column(db.String(8), nullable=True)
+    price = db.Column(db.String(12), nullable=True)
+    promotion_id = db.Column(db.String(8), nullable=True)
+    product_id = db.Column(db.String(12), nullable=True)
+    producer_id = db.Column(db.String(12), nullable=True)
+    operator_id = db.Column(db.String(4), nullable=True)
+    actiontype = db.Column(db.String(5), nullable=True)
+    shortcode = db.Column(db.String(40), nullable=True)
+    msisdn = db.Column(db.String(20), nullable=True)
+    create_time = db.Column(db.DateTime, nullable=True)
+    innerid = db.Column(db.String(2), nullable=True)
+    transactionid = db.Column(db.String(255), nullable=True)
+    currency = db.Column(db.String(20), nullable=True)
+    telco_name = db.Column(db.String(100), nullable=True)
+    insert_time = db.Column(db.DateTime, nullable=True)
+    serverid = db.Column(db.String(10), nullable=True)
+    is_zip = db.Column(db.String(1), nullable=True)
+    complain_flag = db.Column(db.SmallInteger, nullable=True)
+
+    def __repr__(self):
+        return "<Cdr_file %r>" % self.producer_id
+
+# 角色
+class Cdr_file_hour(db.Model):
+    __tablename__ = "cdr_file_hour"
+    __table_args__ = {"useexisting": True}
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)  # 编号
+    hour_time = db.Column(db.String(16), nullable=False)  # 名称
+    amount = db.Column(db.String(32), nullable=False)  # 角色权限列表
+    actiontype = db.Column(db.String(5), nullable=False)
+    producer_id = db.Column(db.String(12), nullable=False)
+    numbers = db.Column(db.String(12), nullable=False)
+    currency = db.Column(db.String(5), nullable=False)
+    create_time = db.Column(db.DateTime, index=True, default=datetime.now)  # 创建时间
+    update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)  # 修改时间
+
+    def __repr__(self):
+        return "<Cdr_file_hour %r>" % self.id
+
+# 备份日志表
+class Backup_log(db.Model):
+    __tablename__ = "backup_log"
+    __table_args__ = {"useexisting": True}
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)  # 编号
+    backup_time = db.Column(db.String(18), nullable=False)  # 名称
+    func_name = db.Column(db.String(32), nullable=False)  # 角色权限列表
+    used_time = db.Column(db.String(200), nullable=False)
+    cdr_file_max_time = db.Column(db.String(200), nullable=False)
+    create_time = db.Column(db.DateTime, index=True, default=datetime.now)  # 创建时间
+    update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)  # 修改时间
+
+    def __repr__(self):
+        return "<Backup_log %r>" % self.id
+
+
+
+# 备份日志表
+class Bluecoins_log(db.Model):
+    __tablename__ = "bluecoins_log"
+    __table_args__ = {"useexisting": True}
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)  # 编号
+    data = db.Column(db.String(200), nullable=False)  # 名称
+    url = db.Column(db.String(200), nullable=False)  # 角色权限列表
+    name = db.Column(db.String(200), nullable=False)
+    result = db.Column(db.String(200), nullable=False)
+    filename = db.Column(db.String(180), nullable=False)
+    create_time = db.Column(db.DateTime, default=datetime.now)  # 创建时间
+    update_time = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)  # 修改时间
+
+    def __repr__(self):
+        return "<Bluecoins_log %r>" % self.id
+
+
+# 订阅记录
+class Subs_subscription(db.Model):
+    __bind_key__ = 'charge'
+    __tablename__ = "subs_subscription"
+    __table_args__ = {"useexisting": True}
+    subs_id = db.Column(db.String(32), primary_key=True)  # 编号
+    svid = db.Column(db.String(7), nullable=True)
+    msisdn = db.Column(db.String(12), nullable=True)
+    state = db.Column(db.String(4), nullable=True)
+    subscriped_time = db.Column(db.DateTime, nullable=True)
+    lastupdate_time = db.Column(db.DateTime, nullable=True)
+    next_recurring_time = db.Column(db.DateTime, nullable=True)
+    Product_id = db.Column(db.String(20), nullable=True)
+    operatorId = db.Column(db.Integer, nullable=True)
+    True_mesasgeid = db.Column(db.String(64), nullable=True)
+    telco_name = db.Column(db.String(20), nullable=True)
+
+    def __repr__(self):
+        return "<Subs_subscription %r>" % self.subs_id
 
 ''' 
 #创建数据表

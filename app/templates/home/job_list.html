@@ -1,0 +1,123 @@
+{% extends 'home/home.html' %}
+{% import "common/page.html" as paginate_page %}
+
+{% block css %}
+    <style>
+        .pagination {
+            display: inline-block;
+            padding-left: 0;
+            margin: 0;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>定时任务日志</h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#">Settings 1</a>
+                                        </li>
+                                        <li><a href="#">Settings 2</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                </li>
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+                        {# 提示信息 #}
+                        {% include 'common/message.html' %}
+                        <div class="tile-stats">
+                            <p>删除时，记录小时<code>cdr_file_hour.hour_time</code>格式： <code>2018-03-29-19</code>(存在即可); 记录时间<code>cdr_file_hour.create_time</code>格式：<code>2018-03-29 21:30:26</code> (存在即可)</p>
+                            <p>补充时，记录小时<code>cdr_report.create_time</code>格式： <code>2018-03-29-19</code>(整点时间); 记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29 21:00:00</code> (整点时间)</p>
+                            <p>补充时，记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29 00:00:00</code>将会补充整天数据</p>
+                            <form method="post" action="{{ url_for('home.jobs') }}" class="form-inline" style="margin-top: 5px;margin-left: 10px;">
+
+                                <div class="form-group">
+                                    {{ form.action }}
+                                    {% for err in form.action.errors %}
+                                        <p class="text-danger pull-left">{{ err }}</p>
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group">
+                                     {{ form.field }}
+                                     {% for err in form.field.errors %}
+                                        <p class="text-danger pull-left">{{ err }}</p>
+                                     {% endfor %}
+
+                                </div>
+                                <div class="form-group">
+                                    {{ form.where }}
+                                    {% for err in form.where.errors %}
+                                        <p class="text-danger pull-left">{{ err }}</p>
+                                     {% endfor %}
+                                </div>
+                                <div class="form-group" style="margin-bottom: 5px;">
+                                    {{ form.submit }}
+                                    {{ form.csrf_token }}
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="x_content">
+
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>备份时间</th>
+                                    <th>执行函数</th>
+                                    <th>使用时间</th>
+                                    <th>创建时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for v in page_data.items %}
+                                    <tr>
+                                        <td>{{ v.id }}</td>
+                                        <td>{{ v.backup_time }}</td>
+                                        <td>{{ v.func_name }}</td>
+                                        <td>{{ v.used_time }}</td>
+                                        <td>{{ v.create_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {{ paginate_page.page(page_data,'home.job_list') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <!-- echarts -->
+    <script src="{{ url_for('static',filename='vendors/echarts/echarts.js') }}"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+
+
+{% endblock %}
