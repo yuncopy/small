@@ -4,7 +4,7 @@ __date__ = '2018年3月15日15:39:44'
 
 from . import home
 from app.home.forms import LoginForm, AdminForm, AuthForm, RoleForm, PwdForm,JobForm,BlueCoinForm
-from flask import render_template, url_for, redirect, flash, session, request, Response, abort
+from flask import render_template, url_for, redirect, flash, session, request, Response, abort,jsonify
 from app.models import Admin, Auth, Role, Adminlog, Ref_producer, Tb_transaction_backup, NewTbModel, Subs_subscription,Product_info, Cdr_file_hour,Backup_log,Cdr_file,Bluecoins_log
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash
@@ -18,6 +18,7 @@ import urllib.request
 from hashlib import md5
 from random import Random
 import os
+from sqlalchemy.ext.serializer import loads, dumps
 # ================公共函数================
 
 
@@ -71,15 +72,26 @@ def home_auth(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
+
+
         admin = Admin.query.join(
             Role
         ).filter(
             Role.id == Admin.role_id,
             Admin.id == session["admin_id"]
         ).first()
+
+
         auths = admin.role.auths  # 字符串
         auths = list(map(lambda v: int(v), auths.split(",")))  # 转化为列表
-        auth_list = Auth.query.all()
+
+        # 缓存
+        if 'auth' in session:
+            auth_list = loads(session['auth'])
+        else:
+            auth_list = Auth.query.all()
+            session['auth'] = dumps(auth_list)
+
         # urls = [v.url for v in auth_list for val in auths if val == v.id]
         urls = []
         for v in auth_list:
@@ -261,9 +273,8 @@ def index():
             Cdr_file_hour.hour_time.asc()
         ).all()
 
-
-
-
+        es_total =0
+        """
         qry = Cdr_file_hour.query.order_by(
             Cdr_file_hour.create_time.desc(),
             Cdr_file_hour.id.desc()
@@ -280,8 +291,9 @@ def index():
             if records:
                 for v in records:
                     es_total += round(rate_currency(v['doc_count'], v['key']), 2)
+        """
 
-            print(es_total)
+        print(es_total)
 
 
         income_hour = income_data(data_hour)
@@ -1097,7 +1109,7 @@ def adjust():
                 TbModel.producer_id,
                 TbModel.ccy
             ).order_by(
-                TbModel.create_time.asc()
+                TbModel.create_time.desc()
             ).offset(start).limit(length).all()
             list_data = []
             for v in data:
@@ -1189,7 +1201,7 @@ def get_adjust_data():
                 TbModel.create_time,
                 TbModel.ccy
             ).order_by(
-                TbModel.create_time.desc()
+                TbModel.create_time.asc()
             ).all()
 
             # 输出数据
@@ -1524,5 +1536,6 @@ def logout():
     # 重定向到home模块下的登录。
     session.pop("admin", None)
     session.pop("admin_id", None)
+    session.pop("auth", None)
     flash('已安全退出。', 'ok')
     return redirect(url_for('home.login'))  # 退出跳转到登录界面
