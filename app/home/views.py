@@ -406,6 +406,7 @@ def real_time(time):
 
 @home.route("/bluecons/list/<int:page>/", methods=["GET","POST"])
 @is_login_req
+@home_auth
 def blue_coins(page=None):
     """
     BlueCoins列表
@@ -736,11 +737,11 @@ def charge():
     ).all()
 
     # 查询上个月数据
-    num = 31 - int(st)  # 补上数据
+    num = 30 - len(data)  # 补上数据
     if num > 0:
-        last_day = 31 + num
-        day_time_before = datetime.now() + timedelta(days=-last_day)
+        day_time_before = datetime.now() + timedelta(days=-30)
         day_time_format = day_time_before.strftime("%Y%m")  # 获取
+
         TbModel_LAST = NewTbModel(Tb_transaction_backup, 'tb_transaction_backup_' + day_time_format)
 
         filters_last = {
@@ -794,6 +795,7 @@ def charge():
 # 定时任务处理cdr_file 文件
 @home.route('/jobs/list/<int:page>/', methods=["GET"])
 @is_login_req
+@home_auth
 def job_list(page):
     """
     任务日志列表
@@ -812,6 +814,7 @@ def job_list(page):
 
 @home.route('/jobs/', methods=["GET", "POST"])
 @is_login_req
+@home_auth
 def jobs():
     form = JobForm()
     if form.validate_on_submit():
@@ -1094,7 +1097,7 @@ def adjust():
                 TbModel.producer_id,
                 TbModel.ccy
             ).order_by(
-                TbModel.create_time.desc()
+                TbModel.create_time.asc()
             ).offset(start).limit(length).all()
             list_data = []
             for v in data:

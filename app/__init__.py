@@ -64,5 +64,5 @@ def page_not_found(error):
 
 # 权限页面
 @app.errorhandler(403)
-def page_ccess_found(error):
+def page_access_found(error):
     return render_template("home/403.html")  # 搜索页面
