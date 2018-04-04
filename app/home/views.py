@@ -8,7 +8,7 @@ from flask import render_template, url_for, redirect, flash, session, request, R
 from app.models import Admin, Auth, Role, Adminlog, Ref_producer, Tb_transaction_backup, NewTbModel, Subs_subscription,Product_info, Cdr_file_hour,Backup_log,Cdr_file,Bluecoins_log
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash
-from app import db, app, redis, es
+from app import db, app, redis, es,scheduler
 from datetime import timedelta, datetime
 from functools import wraps
 import json
@@ -918,6 +918,85 @@ def jobs():
 
 
 
+@home.route('/pause/<string:id>/', methods=["GET", "POST"])
+@is_login_req
+def pausetask(id):
+    """
+    暂停
+    :param id:
+    :return:
+    """
+    scheduler.pause_job(id)
+    data=dict(
+        status=200,
+        message='success'
+    )
+    return json.dumps(data)
+
+@home.route('/resume/<string:id>/', methods=["GET", "POST"])
+@is_login_req
+def resumetask(id):
+    """
+    恢复
+    :param id:
+    :return:
+    """
+    scheduler.resume_job(id)
+    data=dict(
+        status=200,
+        message='success'
+    )
+    return json.dumps(data)
+
+
+@home.route('/gettask/', methods=["GET", "POST"])
+@is_login_req
+def gettask():
+    """
+    获取
+    :param id:
+    :return:
+    """
+    data =scheduler.get_jobs()
+    print(data)
+    return '222'
+
+
+@home.route('/removetask/<string:id>/', methods=["GET", "POST"])
+@is_login_req
+def removetask(id):
+    """
+    移除
+    :param id:
+    :return:
+    """
+    scheduler.delete_job(id)
+    data = dict(
+        status=200,
+        message='success'
+    )
+    return json.dumps(data)
+
+
+
+@home.route('/addtask/', methods=["GET", "POST"])
+@is_login_req
+def addtask():
+    """
+    添加
+    :param id:
+    :return:
+    """
+    scheduler.add_job(func='app.home.jobs:task1', id='1', args=(1, 2), trigger='interval', seconds=5, replace_existing=True)
+    data = dict(
+        status=200,
+        message='success'
+    )
+    return json.dumps(data)
+
+
+
+
 
 @home.route("/elastics/", methods=["GET", "POST"])
 @is_login_req
@@ -1490,6 +1569,15 @@ def pwd():
         flash("修改密码成功，请重新登录！", "ok")
         return redirect(url_for('home.logout'))
     return render_template('home/pwd.html', form=form)  # 修改密码
+
+
+
+
+
+
+
+
+
 
 
 @home.route("/login/", methods=["GET", "POST"])

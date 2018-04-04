@@ -2,46 +2,10 @@
 __author__ = 'Angela'
 __date__ = '2018年3月15日15:42:03'
 
-from flask_apscheduler import APScheduler
 from datetime import datetime,timedelta
-from app import db,es
+from app import db
 from app.models import Cdr_file,Cdr_file_hour,Backup_log
 from sqlalchemy import func
-
-
-class Config(object):  # 创建配置，用类
-    JOBS = [  # 任务列表
-        {
-            'id': 'job_es_hour',
-            'func': 'app.home.jobs:job_es_hour',
-            'args': (3, 4),
-            'trigger': 'cron',
-            'second':'1',
-            'minute':'30',   # */5   每5分钟
-            'hour':'0-23'
-        },
-        {
-            'id': 'job_del_hour',
-            'func': 'app.home.jobs:job_del_hour',
-            'args': (1, 2),
-            'trigger': 'cron',
-            'second': '1',
-            'minute': '1',
-            'hour': '2'
-        }
-    ]
-    SCHEDULER_API_ENABLED = True
-
-
-def jobs(app):
-    app.config.from_object(Config())  # 为实例化的flask引入配置
-    scheduler = APScheduler()  # 实例化APScheduler
-    scheduler.init_app(app)  # 把任务列表放进flask
-    scheduler.start()  # 启动任务列表
-
-
-
-
 
 
 # 每个小时缓存数据到数据，直接从备份数据临时表获取一个小时数据
@@ -168,3 +132,9 @@ def job_del_hour(a,b):
         db.session.rollback()
 
     print('end:' + end_time)
+
+
+def task1(a, b):
+    dt = datetime.now()
+    start_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+    print(start_time +'||'+str(a) + ' ' + str(b))

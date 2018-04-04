@@ -9,7 +9,7 @@ from flask import Flask,render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_redis import FlaskRedis
 from flask_elasticsearch import FlaskElasticsearch
-
+from flask_apscheduler import APScheduler
 
 
 # 实例化对象
@@ -46,7 +46,7 @@ app.use_debugger =False
 db = SQLAlchemy(app)
 redis = FlaskRedis(app)
 es = FlaskElasticsearch(app)
-
+scheduler = APScheduler()
 
 
 # 导入蓝图模块 # 不要在生成db之前导入注册蓝图。
