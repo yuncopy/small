@@ -978,7 +978,6 @@ def removetask(id):
     return json.dumps(data)
 
 
-
 @home.route('/addtask/', methods=["GET", "POST"])
 @is_login_req
 def addtask():
