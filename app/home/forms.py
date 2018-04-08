@@ -274,6 +274,87 @@ class JobForm(FlaskForm):
 
 
 
+class TaskForm(FlaskForm):
+    """
+    定时任务
+    """
+    name =  StringField(
+        label="任务名称",
+        validators=[
+            DataRequired("任务名称不能为空！")
+        ],
+        description="任务名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "备份CDR"
+        }
+    )
+    task = SelectField(
+        label="作业类型",
+        validators=[
+            DataRequired("作业类型不能为空！")
+        ],
+        coerce=str,
+        choices=[('', '选择操作作业类型'),('cron', 'Cron定时调度'),('interval', 'Interval间隔调度'),('date', 'Date定时调度')],
+        render_kw={
+            "class": "form-control",
+            "placeholder": "请输入角色名称！"
+        }
+    )
+
+    format = StringField(
+        label="定时任务",
+        validators=[
+            DataRequired("任务名称不能为空！")
+        ],
+        description="定时任务",
+        render_kw={
+            "class": "form-control",
+            "placeholder": '{"month":"6-8,11-12","hour":"0-3"}'
+        }
+    )
+    func = StringField(
+        label="执行函数",
+        validators=[
+            DataRequired("执行函数不能为空！")
+        ],
+        description="执行函数",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "app.home.jobs:task1！"
+        }
+    )
+    args = StringField(
+        label="参数传递",
+        validators=[
+            DataRequired("参数传递不能为空！")
+        ],
+        description="(1,8)",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "1,8"
+        }
+    )
+    info = StringField(
+        label="任务备注",
+        validators=[
+            DataRequired("任务名称不能为空！")
+        ],
+        description="任务名称",
+        render_kw={
+            "class": "form-control",
+            "placeholder": "说明任务内容"
+        }
+    )
+    submit = SubmitField(
+        '确定',
+        render_kw={
+            "class": "btn btn-success",
+        }
+    )
+
+
+
 class BlueCoinForm(FlaskForm):
         """
         BlueCoins

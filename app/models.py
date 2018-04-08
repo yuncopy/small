@@ -90,6 +90,27 @@ class Role(db.Model):
         return "<Role %r>" % self.name
 
 
+
+
+# 任务列表
+class TaskList(db.Model):
+    __tablename__ = "task_list"
+    __table_args__ = {"useexisting": True}
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    name = db.Column(db.String(32), unique=True)  # 名称
+    task = db.Column(db.String(16))  # 任务类型
+    format = db.Column(db.String(180))  # 任务定时任务格式
+    func = db.Column(db.String(32))  # 执行函数
+    args = db.Column(db.String(18))  # 执行参数
+    info = db.Column(db.String(255))  # 备注信息
+    status = db.Column(db.Integer)   #状态
+    create_time = db.Column(db.DateTime, index=True, default=datetime.now)  # 创建时间
+    update_time = db.Column(db.DateTime, index=True, default=datetime.now, onupdate=datetime.now)  # 修改时间
+
+
+    def __repr__(self):
+        return "<task_list %r>" % self.name
+
 # ===============BEST======数据库模型=======
 
 # 查询月备表

@@ -13,93 +13,257 @@
 {% endblock %}
 
 {% block content %}
-
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2>定时任务日志</h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                                </li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                                       aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Settings 1</a>
-                                        </li>
-                                        <li><a href="#">Settings 2</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li><a class="close-link"><i class="fa fa-close"></i></a>
-                                </li>
-                            </ul>
-                            <div class="clearfix"></div>
+                    {# 提示信息 #}
+                    {% include 'common/message.html' %}
+                    <div class="col-md-4 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>新增任务<small><a target="_blank" href="http://debugo.com/apscheduler/">手册</a></small></h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#">Settings 1</a>
+                                            </li>
+                                            <li><a href="#">Settings 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>
+
+
+                            <div class="x_content">
+                                <form class="form-horizontal form-label-left" method="post" action="{{ url_for('home.addtask') }}">
+                                     <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.name.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.name }}
+                                             {% for err in task.name.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+                                    <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.task.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.task }}
+                                             {% for err in task.task.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+                                     <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.format.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.format }}
+                                             {% for err in task.format.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                             <a target="_blank" href="https://blog.csdn.net/u010159842/article/details/79205791">
+                                                 <code>说明手册，必须严格JSON格式：</code>
+                                                 </a>注意：双引号，花括号<code>day_of_week='mon-fri', hour=5, minute=30,end_date='2014-05-30'</code>
+                                                 转化<code>{"day_of_week":"mon-fri","hour":5,"minute":30,"end_date":"2014-05-30"}</code>
+                                         </div>
+
+                                     </div>
+                                     <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.func.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.func }}
+                                             {% for err in task.func.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+                                    <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.args.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.args }}
+                                             {% for err in task.args.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+
+                                    <div class="form-group">
+                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">{{ task.info.label }}</label>
+                                         <div class="col-md-9 col-sm-9 col-xs-12">
+                                             {{ task.info }}
+                                             {% for err in task.info.errors %}
+                                                <p class="text-danger pull-left">{{ err }}</p>
+                                             {% endfor %}
+                                         </div>
+                                     </div>
+                                      <div class="form-group">
+                                        <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+                                            {{ task.submit }}
+                                            {{ task.csrf_token }}
+                                        </div>
+                                      </div>
+                                </form>
+                            </div>
                         </div>
-                        {# 提示信息 #}
-                        {% include 'common/message.html' %}
-                        <div class="tile-stats">
-                            <p>删除时，记录小时<code>cdr_file_hour.hour_time</code>格式： <code>2018-03-29-19</code>(存在即可); 记录时间<code>cdr_file_hour.create_time</code>格式：<code>2018-03-29 21:30:26</code> (存在即可)</p>
-                            <p>补充时，记录小时<code>cdr_report.create_time</code>格式： <code>2018-03-29-19</code>(整点时间); 记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29 21:00:00</code> (整点时间)</p>
-                            <p>补充时，记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29 00:00:00</code>将会补充整天数据</p>
-                            <form method="post" action="{{ url_for('home.jobs') }}" class="form-inline" style="margin-top: 5px;margin-left: 10px;">
 
-                                <div class="form-group">
-                                    {{ form.action }}
-                                    {% for err in form.action.errors %}
-                                        <p class="text-danger pull-left">{{ err }}</p>
-                                    {% endfor %}
-                                </div>
-                                <div class="form-group">
-                                     {{ form.field }}
-                                     {% for err in form.field.errors %}
-                                        <p class="text-danger pull-left">{{ err }}</p>
-                                     {% endfor %}
+                    </div>
+                    <div class="col-md-8 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>任务日志</h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                           aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#">Settings 1</a>
+                                            </li>
+                                            <li><a href="#">Settings 2</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>
 
-                                </div>
-                                <div class="form-group">
-                                    {{ form.where }}
-                                    {% for err in form.where.errors %}
-                                        <p class="text-danger pull-left">{{ err }}</p>
-                                     {% endfor %}
-                                </div>
-                                <div class="form-group" style="margin-bottom: 5px;">
-                                    {{ form.submit }}
-                                    {{ form.csrf_token }}
-                                </div>
-                            </form>
 
-                        </div>
-                        <div class="x_content">
+                            <div class="tile-stats">
+                                <p><b>删除时</b>，记录小时<code>cdr_file_hour.hour_time</code>格式： <code>2018-03-29-19</code>(存在即可);
+                                    记录时间<code>cdr_file_hour.create_time</code>格式：<code>2018-03-29 21:30:26</code> (存在即可)
+                                <b>补充时</b>，记录小时<code>cdr_report.create_time</code>格式： <code>2018-03-29-19</code>(整点时间); 记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29
+                                    21:00:00</code> (整点时间)
+                                <b>补充时</b>，记录时间<code>cdr_report.create_time</code>格式：<code>2018-03-29 00:00:00</code>将会补充整天数据
+                                </p>
+                                <form method="post" action="{{ url_for('home.jobs') }}" class="form-inline"
+                                      style="margin-top: 5px;margin-left: 10px;">
 
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>编号</th>
-                                    <th>备份时间</th>
-                                    <th>执行函数</th>
-                                    <th>使用时间</th>
-                                    <th>创建时间</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for v in page_data.items %}
+                                    <div class="form-group">
+                                        {{ form.action }}
+                                        {% for err in form.action.errors %}
+                                            <p class="text-danger pull-left">{{ err }}</p>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.field }}
+                                        {% for err in form.field.errors %}
+                                            <p class="text-danger pull-left">{{ err }}</p>
+                                        {% endfor %}
+
+                                    </div>
+                                    <div class="form-group">
+                                        {{ form.where }}
+                                        {% for err in form.where.errors %}
+                                            <p class="text-danger pull-left">{{ err }}</p>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 5px;">
+                                        {{ form.submit }}
+                                        {{ form.csrf_token }}
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="x_content">
+
+                                <table class="table table-bordered">
+                                    <thead>
                                     <tr>
-                                        <td>{{ v.id }}</td>
-                                        <td>{{ v.backup_time }}</td>
-                                        <td>{{ v.func_name }}</td>
-                                        <td>{{ v.used_time }}</td>
-                                        <td>{{ v.create_time }}</td>
+                                        <th>编号</th>
+                                        <th>备份时间</th>
+                                        <th>执行函数</th>
+                                        <th>使用时间</th>
+                                        <th>创建时间</th>
                                     </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                            {{ paginate_page.page(page_data,'home.job_list') }}
+                                    </thead>
+                                    <tbody>
+                                    {% for v in page_data.items %}
+                                        <tr>
+                                            <td>{{ v.id }}</td>
+                                            <td>{{ v.backup_time }}</td>
+                                            <td>{{ v.func_name }}</td>
+                                            <td>{{ v.used_time }}</td>
+                                            <td>{{ v.create_time }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {{ paginate_page.page(page_data,'home.job_list') }}
+                            </div>
                         </div>
                     </div>
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_title">
+                                <h2>任务列表</h2>
+                                <ul class="nav navbar-right panel_toolbox">
+                                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                    </li>
+                                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                                    </li>
+                                </ul>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="x_content">
+                                 <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>编号</th>
+                                        <th>任务名称</th>
+                                        <th>执行函数</th>
+                                        <th>任务说明</th>
+                                        <th>当前状态</th>
+                                        <th>创建时间</th>
+                                        <th>执行操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for v in task_data.items %}
+                                        <tr>
+                                            <td>{{ v.id }}</td>
+                                            <td>{{ v.name }}</td>
+                                            <td>{{ v.func }}</td>
+                                            <td>{{ v.info }}</td>
+                                            <td>
+                                                {% if v.status ==1 %}
+                                                    {{'待启动'}}
+                                                {% elif v.status ==2 %}
+                                                    {{'已启动'}}
+                                                {% elif v.status ==3 %}
+                                                    {{'已暂停'}}
+                                                {% else %}
+                                                    {{'已移除'}}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ v.create_time }}</td>
+                                            <td>
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'start')"><i class="fa fa-check-circle"></i> 启动</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'stop')"><i class="fa fa-ban"></i> 暂停</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'restart')"><i class="fa fa-check-square-o"></i> 恢复</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'move')"><i class="fa fa-bell-slash"></i> 移除</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'del')"><i class="fa fa-close"></i> 删除</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {{ paginate_page.page(task_data,'home.job_list') }}
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -114,9 +278,13 @@
     <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
     <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
     <script>
-        $(document).ready(function () {
 
-        });
+            var task_func =function (id,task) {
+                $.post({{ url_for('home.task') }},{id:id,task:task},function (data) {
+                    console.log(data);
+                });
+            };
+
     </script>
 
 

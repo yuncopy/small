@@ -2,10 +2,11 @@
 __author__ = 'Angela'
 __date__ = '2018年3月15日15:39:44'
 
+
 from . import home
-from app.home.forms import LoginForm, AdminForm, AuthForm, RoleForm, PwdForm,JobForm,BlueCoinForm
+from app.home.forms import LoginForm, AdminForm, AuthForm, RoleForm, PwdForm,JobForm,BlueCoinForm,TaskForm
 from flask import render_template, url_for, redirect, flash, session, request, Response, abort,jsonify
-from app.models import Admin, Auth, Role, Adminlog, Ref_producer, Tb_transaction_backup, NewTbModel, Subs_subscription,Product_info, Cdr_file_hour,Backup_log,Cdr_file,Bluecoins_log
+from app.models import Admin, Auth, Role, Adminlog, Ref_producer, Tb_transaction_backup, NewTbModel, Subs_subscription,Product_info, Cdr_file_hour,Backup_log,Cdr_file,Bluecoins_log,TaskList
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash
 from app import db, app, redis, es,scheduler
@@ -815,13 +816,23 @@ def job_list(page):
     # 获取数据表数据
 
     form = JobForm()
+    task = TaskForm()
 
+    # 任务日志
     if page is None:
         page = 1
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
+    ).paginate(page=page, per_page=5)  # page当前页 per_page 分页显示多少条
+
+    # 任务列表
+    if page is None:
+        page = 1
+    task_data = TaskList.query.order_by(
+        TaskList.create_time.desc()  # 倒序
     ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
-    return render_template('home/job_list.html', page_data=page_data,form=form)  # 权限管理
+
+    return render_template('home/job_list.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
 
 
 @home.route('/jobs/', methods=["GET", "POST"])
@@ -918,65 +929,6 @@ def jobs():
 
 
 
-@home.route('/pause/<string:id>/', methods=["GET", "POST"])
-@is_login_req
-def pausetask(id):
-    """
-    暂停
-    :param id:
-    :return:
-    """
-    scheduler.pause_job(id)
-    data=dict(
-        status=200,
-        message='success'
-    )
-    return json.dumps(data)
-
-@home.route('/resume/<string:id>/', methods=["GET", "POST"])
-@is_login_req
-def resumetask(id):
-    """
-    恢复
-    :param id:
-    :return:
-    """
-    scheduler.resume_job(id)
-    data=dict(
-        status=200,
-        message='success'
-    )
-    return json.dumps(data)
-
-
-@home.route('/gettask/', methods=["GET", "POST"])
-@is_login_req
-def gettask():
-    """
-    获取
-    :param id:
-    :return:
-    """
-    data =scheduler.get_jobs()
-    print(data)
-    return '222'
-
-
-@home.route('/removetask/<string:id>/', methods=["GET", "POST"])
-@is_login_req
-def removetask(id):
-    """
-    移除
-    :param id:
-    :return:
-    """
-    scheduler.delete_job(id)
-    data = dict(
-        status=200,
-        message='success'
-    )
-    return json.dumps(data)
-
 
 @home.route('/addtask/', methods=["GET", "POST"])
 @is_login_req
@@ -986,15 +938,94 @@ def addtask():
     :param id:
     :return:
     """
-    scheduler.add_job(func='app.home.jobs:task1', id='1', args=(1, 2), trigger='interval', seconds=5, replace_existing=True)
-    data = dict(
-        status=200,
-        message='success'
-    )
+    form = TaskForm()
+    if form.validate_on_submit():
+        data = form.data
+        # 组合数据
+        task = TaskList(
+            name=data['name'],
+            task=data['task'],
+            format=data['format'],
+            func=data['func'],
+            args=data['args'],
+            info=data['info'],
+            status=1
+        )
+
+        try:
+            json.loads(data['format']) # 检测是否为JSON格式
+            # 执行添加
+            db.session.add(task)
+            db.session.commit()
+            flash("添加任务成功！", "ok")
+        except:
+            db.session.rollback()
+            flash('添加任务失败，请严格按照格式输入！', 'err')
+
+    return redirect(url_for('home.job_list', page=1))
+    """
+    #scheduler.add_job(func='app.home.jobs:task1', id='1', args=(1, 2), trigger='interval', seconds=5, replace_existing=True)
+    data = dict(status=200,message='success')
     return json.dumps(data)
+    """
 
 
+@home.route('/task/', methods=["POST"])
+@is_login_req
+def task():
+    if request.method=='POST':
+        form = request.form
+        input_id = form['id']
+        task = form['task']
+        task_data = TaskList.query.filter_by(id=input_id).first_or_404()
+        id = str(task_data.id)
+        out_data = dict(status=200, message='suceess')
 
+        if task =='start':
+            func=task_data.func
+            args = task_data.args
+            args_ditc = list(map(lambda v: int(v), args.split(",")))
+            trigger = task_data.task
+            format = task_data.format
+
+            format_dict = eval(format)
+            # 关键字可变参数
+            task_args={
+                'func': func,
+                'id': id,
+                'args':args_ditc,
+                'trigger':trigger,
+                'replace_existing':True
+            }
+            # 遍历字典列表
+            for key, values in format_dict.items():
+                task_args[key] = values
+            try:
+                scheduler.add_job(**task_args)
+                #scheduler.add_job(func=func, id=id, args=args_ditc, trigger=trigger, seconds=5, replace_existing=True)
+                status = 2
+            except:
+                out_data = dict(status=400, message='error')
+        elif  task =='stop':
+            scheduler.pause_job(id)
+            status = 3
+        elif task == 'move':
+            scheduler.delete_job(id)
+            status = 4
+        elif task == 'restart':
+            scheduler.resume_job(id)
+            status = 5
+        else:
+            db.session.delete(task_data)
+            db.session.commit()
+
+        # 更状态，排除删除数据
+        if task != 'del':
+            task_data.status = status
+            db.session.add(task_data)
+            db.session.commit()
+
+    return json.dumps(out_data)
 
 
 @home.route("/elastics/", methods=["GET", "POST"])

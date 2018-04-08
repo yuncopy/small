@@ -3,7 +3,7 @@ __author__ = 'Angela'
 __date__ = '2018年3月15日15:42:03'
 
 from datetime import datetime,timedelta
-from app import db
+from app import db,app
 from app.models import Cdr_file,Cdr_file_hour,Backup_log
 from sqlalchemy import func
 
@@ -134,7 +134,24 @@ def job_del_hour(a,b):
     print('end:' + end_time)
 
 
+
+
 def task1(a, b):
+    """
+    测试定时任务
+    :param a:
+    :param b:
+    :return:
+    """
     dt = datetime.now()
     start_time = dt.strftime('%Y-%m-%d %H:%M:%S')
+    # 写入文件
+    #blue_dir = app.config["BLUE_DIR"]
+    """
+    blue_dir = '/tmp/'
+    file_path = blue_dir+'task.txt'
+    blue_coin_file = open(file_path, 'a')
+    blue_coin_file.write(start_time +'||'+str(a) + ' ' + str(b) + "\n")
+    blue_coin_file.close()
+    """
     print(start_time +'||'+str(a) + ' ' + str(b))
