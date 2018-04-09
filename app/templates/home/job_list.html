@@ -235,7 +235,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for v in task_data.items %}
+                                    {% for v in task_data %}
                                         <tr>
                                             <td>{{ v.id }}</td>
                                             <td>{{ v.name }}</td>
@@ -264,7 +264,6 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                {{ paginate_page.page(task_data,'home.job_list') }}
                             </div>
                         </div>
                     </div>

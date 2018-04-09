@@ -126,6 +126,7 @@
     # 启动
     - /usr/local/bin/gunicorn -c gunicorn.ini subview:app
     - /usr/local/bin/gunicorn -w 4 -b 0.0.0.0:9008 subview:app --preload
+    - 部署后动作 cd /application/sub_view/sub_view && mv app/__init__online.py app/__init__.py && kill -HUP `cat /tmp/subview-pid.pid`
     ```
 
 - 项目功能截图

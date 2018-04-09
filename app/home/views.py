@@ -815,7 +815,7 @@ def charge():
 
 
 # 定时任务处理cdr_file 文件
-@home.route('/jobs/list/<int:page>/', methods=["GET"])
+@home.route('/job/list/<int:page>/', methods=["GET"])
 @is_login_req
 @home_auth
 def job_list(page):
@@ -835,11 +835,11 @@ def job_list(page):
     ).paginate(page=page, per_page=6)  # page当前页 per_page 分页显示多少条
 
     # 任务列表
-    if page is None:
-        page = 1
     task_data = TaskList.query.order_by(
         TaskList.create_time.desc()  # 倒序
-    ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
+    ).all()  # page当前页 per_page 分页显示多少条
+
+    print(task_data)
 
     return render_template('home/job_list.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
 
