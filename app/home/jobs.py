@@ -147,11 +147,10 @@ def task1(a, b):
     start_time = dt.strftime('%Y-%m-%d %H:%M:%S')
     # 写入文件
     #blue_dir = app.config["BLUE_DIR"]
-    """
     blue_dir = '/tmp/'
     file_path = blue_dir+'task.txt'
     blue_coin_file = open(file_path, 'a')
     blue_coin_file.write(start_time +'||'+str(a) + ' ' + str(b) + "\n")
     blue_coin_file.close()
-    """
+
     print(start_time +'||'+str(a) + ' ' + str(b))
