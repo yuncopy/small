@@ -122,3 +122,7 @@
     - /usr/local/bin/gunicorn -w 4 -b 0.0.0.0:9008 subview:app --preload
     ```
 
+- 项目功能截图
+![查询数据](data.png)
+![权限控制](rbac.png)
+![优化数据](sub.png)
