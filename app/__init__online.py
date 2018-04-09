@@ -37,7 +37,7 @@ app.config["ELASTICSEARCH_HOST"] = "47.52.0.90:9200"
 
 
 # 开启调试模式
-app.debug = True
+app.debug = False
 app.use_reloader=False
 
 
