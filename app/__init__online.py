@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 
 # 数据库连接配置  （多个数据库连接）
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://sub_view:sMeqqakk75gubuGccMBF@10.30.72.51:21406/subview'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://sub_view:sMeqqakk75gubuGccMBF@10.30.72.51:21406/sub_view'
 app.config['SQLALCHEMY_BINDS'] = {
     'best':'mysql+pymysql://cdr:ZUi6vwX529BfGM6ffGkBOYNnMLBUmThX@47.90.124.253:21406/cdr_report',
     'charge':'mysql+pymysql://blueGuest:r9ue9dk#kmYT6Ni3QE&D@203.151.92.138:21406/charge'
