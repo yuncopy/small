@@ -474,6 +474,10 @@ def blue_coins(page=None):
 
                     #res ='{"result":{"activityId":0,"amount":50,"batchId":"batch20180330160141185EkU","cardNo":"6437937526832855","cardNote":"best7bqCdJl3H9Mk66uaA36Y","cardType":1,"channel":0,"createTime":"2018-03-30 16:01:41","currency":"THB","customerId":"66uaA36Y","expiredTime":"2019-03-25 16:01:41","innerId":"THB20180330160141187XpS","producerId":1,"status":0,"transactionId":"best7bqCdJl3H9Mk"},"status":200}'
 
+                    blue_coin_log = open(blue_dir+mt+'.log', 'a')
+                    blue_coin_log.write(dt.strftime("%Y-%m-%d %H:%M:%S")+'||'+res+'|| '+session['admin']+"\n")
+                    blue_coin_log.close()
+
                     dict_res = json.loads(s=res)
                     result = dict_res['result']
                     cardNo = str(result['cardNo'])
@@ -487,9 +491,9 @@ def blue_coins(page=None):
                     blue_coin_file.write(cardNo_info+"\n")
                     blue_coin_file.close()
 
-                    dir_list = blue_dir.split('/')
-                    coins_dir = dir_list[1]
+                    coins_dir = blue_dir.split('/')[-2]
 
+                    print(coins_dir+'/'+file_name)
                     # 添加操作日志
                     bluecons_log = Bluecoins_log(
                         data=voucherParams,
@@ -497,16 +501,16 @@ def blue_coins(page=None):
                         name=session['admin'],
                         result='cardNo:'+ cardNo_info,
                         filename=coins_dir+'/'+file_name
-
                     )
+
                     db.session.add(bluecons_log)
                     db.session.commit()
                     time.sleep(0.2)
 
-                flash("[{0}] [{1}]导入成功".format(amount, numbers), "ok")
+                flash("[{0}] [{1}]导出成功".format(amount, numbers), "ok")
             except:
                 db.session.rollback()
-                flash("[{0}] [{1}]导入失败".format(amount, numbers), "err")
+                flash("[{0}] [{1}]导出失败".format(amount, numbers), "err")
             return redirect(url_for('home.blue_coins', page=1))
     else:
         if page is None:

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50638
 File Encoding         : 65001
 
-Date: 2018-04-09 11:04:24
+Date: 2018-04-09 15:10:43
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -1871,16 +1871,16 @@ INSERT INTO `role` VALUES ('2', 'ES 管理员', '6', '2018-03-28 19:55:25', '201
 -- ----------------------------
 DROP TABLE IF EXISTS `task_list`;
 CREATE TABLE `task_list` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) DEFAULT NULL,
-  `task` varchar(16) DEFAULT NULL,
-  `format` varchar(180) DEFAULT NULL,
-  `func` varchar(32) DEFAULT NULL,
-  `args` varchar(18) DEFAULT NULL,
-  `info` varchar(255) DEFAULT NULL,
-  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1 待启动  2 启动  3 暂停 4 移除',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(32) DEFAULT NULL COMMENT '名称',
+  `task` varchar(16) DEFAULT NULL COMMENT '定时任务类型',
+  `format` varchar(180) DEFAULT '' COMMENT '定时任务JSON格式',
+  `func` varchar(32) DEFAULT NULL COMMENT '执行函数',
+  `args` varchar(18) DEFAULT NULL COMMENT '参数',
+  `info` varchar(255) DEFAULT NULL COMMENT '说明',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1 待启动  2 启动  3 暂停 4 移除 5 恢复',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建事件',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 

@@ -2,7 +2,6 @@
 __author__ = 'Angela'
 __date__ = '2018年3月15日15:39:44'
 
-
 from app import app,scheduler
 
 class Config(object):
