@@ -60,6 +60,7 @@
                                     {{ form.csrf_token }}
                                 </div>
                             </form>
+                            <p>生成卡号会以追加形式写入文件，列表中最靠前为最全的</p>
                         </div>
                         <div class="x_content">
 
@@ -79,7 +80,7 @@
                                         <td>{{ v.id }}</td>
                                         <td>{{ v.name }}</td>
                                         <td>{{ v.result }}</td>
-                                        <td>{{ v.filename }}</td>
+                                        <td><a target="_blank" href="{{ url_for('static', filename=v.filename) }}" >{{ v.filename }}</a></td>
                                         <td>{{ v.create_time }}</td>
                                     </tr>
                                 {% endfor %}

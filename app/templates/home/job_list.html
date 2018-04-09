@@ -2,6 +2,11 @@
 {% import "common/page.html" as paginate_page %}
 
 {% block css %}
+
+    <!-- PNotify -->
+    <link href="{{ url_for('static',filename='vendors/pnotify/dist/pnotify.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static',filename='vendors/pnotify/dist/pnotify.buttons.css') }}" rel="stylesheet">
+
     <style>
         .pagination {
             display: inline-block;
@@ -71,9 +76,9 @@
                                                 <p class="text-danger pull-left">{{ err }}</p>
                                              {% endfor %}
                                              <a target="_blank" href="https://blog.csdn.net/u010159842/article/details/79205791">
-                                                 <code>说明手册，必须严格JSON格式：</code>
-                                                 </a>注意：双引号，花括号<code>day_of_week='mon-fri', hour=5, minute=30,end_date='2014-05-30'</code>
-                                                 转化<code>{"day_of_week":"mon-fri","hour":5,"minute":30,"end_date":"2014-05-30"}</code>
+                                                 选择不同的作业类型，定时任务的参数格式有所不同，具体请查看说明手册</a><i class="red">严格要求JSON格式</i>
+                                                 注意：双引号，花括号。原始格式：<code>day_of_week='mon-fri', hour=5, minute=30,end_date='2014-05-30'</code>
+                                                 转化为JSON格式：<code>{"day_of_week":"mon-fri","hour":5,"minute":30,"end_date":"2014-05-30"}</code>
                                          </div>
 
                                      </div>
@@ -226,7 +231,7 @@
                                         <th>任务说明</th>
                                         <th>当前状态</th>
                                         <th>创建时间</th>
-                                        <th>执行操作</th>
+                                        <th>执行操作 (目前没有再次确认框，请慎重操作)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -249,11 +254,11 @@
                                             </td>
                                             <td>{{ v.create_time }}</td>
                                             <td>
-                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'start')"><i class="fa fa-check-circle"></i> 启动</a>|
-                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'stop')"><i class="fa fa-ban"></i> 暂停</a>|
-                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'restart')"><i class="fa fa-check-square-o"></i> 恢复</a>|
-                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'move')"><i class="fa fa-bell-slash"></i> 移除</a>|
-                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'del')"><i class="fa fa-close"></i> 删除</a>
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'start',this)" data-text="已启动"><i class="fa fa-check-circle"></i> 启动</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'stop',this)" data-text="已暂停"><i class="fa fa-ban"></i> 暂停</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'restart',this)" data-text="已恢复"><i class="fa fa-check-square-o"></i> 恢复</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'move',this)" data-text="已移除"><i class="fa fa-bell-slash"></i> 移除</a>|
+                                                <a href="javascript:void(0);" onclick="task_func({{ v.id }},'del',this)" data-text="已删除记录" class="red"><i class="fa fa-close"></i> 删除</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -277,13 +282,33 @@
     <!-- bootstrap-daterangepicker -->
     <script src="{{ url_for('static',filename='vendors/moment/min/moment.min.js') }}"></script>
     <script src="{{ url_for('static',filename='vendors/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
+
+    <!-- PNotify -->
+    <script src="{{ url_for('static',filename='vendors/pnotify/dist/pnotify.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendors/pnotify/dist/pnotify.buttons.js') }}"></script>
     <script>
 
-            var task_func =function (id,task) {
-                $.post({{ url_for('home.task') }},{id:id,task:task},function (data) {
-                    console.log(data);
-                });
-            };
+        var task_func =function (id,task,ob) {
+            var content = $(ob).attr('data-text');
+            $.post({{ url_for('home.task') }},{id:id,task:task},function (data) {
+                if(data.status==200){
+                     new PNotify({
+                        title: '操作提示',
+                        text: content+' 编号 ['+id+'] 成功',
+                        type: 'success',
+                        styling: 'bootstrap3'
+                    });
+                     $(this).parents('tr').find('td').eq(4).html(content)
+                }else{
+                    new PNotify({
+                        title: '操作提示',
+                        text: content+' 编号 ['+id+'] 失败',
+                        type: 'error',
+                        styling: 'bootstrap3'
+                    });
+                }
+            },'json');
+        };
 
     </script>
 

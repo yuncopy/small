@@ -424,6 +424,7 @@ def blue_coins(page=None):
     """
     BlueCoins列表
     """
+
     form = BlueCoinForm()
     if request.method =='POST':
         if form.validate_on_submit():
@@ -480,10 +481,14 @@ def blue_coins(page=None):
                     cardNo_info = cardNo + ' | ' + amount
 
                     # 写入文件
-                    file_path = blue_dir+mt+'_'+amount+'.txt'
+                    file_name = mt+'_'+amount+'_'+str(numbers)+'.txt'
+                    file_path = blue_dir+file_name
                     blue_coin_file = open(file_path, 'a')
                     blue_coin_file.write(cardNo_info+"\n")
                     blue_coin_file.close()
+
+                    dir_list = blue_dir.split('/')
+                    coins_dir = dir_list[1]
 
                     # 添加操作日志
                     bluecons_log = Bluecoins_log(
@@ -491,7 +496,7 @@ def blue_coins(page=None):
                         url=encrypt_text,
                         name=session['admin'],
                         result='cardNo:'+ cardNo_info,
-                        filename=file_path
+                        filename=coins_dir+'/'+file_name
 
                     )
                     db.session.add(bluecons_log)
@@ -823,7 +828,7 @@ def job_list(page):
         page = 1
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
-    ).paginate(page=page, per_page=5)  # page当前页 per_page 分页显示多少条
+    ).paginate(page=page, per_page=6)  # page当前页 per_page 分页显示多少条
 
     # 任务列表
     if page is None:
@@ -1006,6 +1011,7 @@ def task():
                 status = 2
             except:
                 out_data = dict(status=400, message='error')
+
         elif  task =='stop':
             scheduler.pause_job(id)
             status = 3
@@ -1022,9 +1028,7 @@ def task():
         # 更状态，排除删除数据
         if task != 'del':
             task_data.status = status
-            db.session.add(task_data)
             db.session.commit()
-
     return json.dumps(out_data)
 
 
