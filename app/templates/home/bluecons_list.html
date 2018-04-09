@@ -42,7 +42,7 @@
                         {# 提示信息 #}
                         {% include 'common/message.html' %}
                         <div class="tile-stats">
-                            <form method="post"  class="form-inline" style="margin-top: 5px;margin-left: 10px;">
+                            <form method="post" action="{{ url_for('home.blue_coins',page=1) }}" class="form-inline" style="margin-top: 5px;margin-left: 10px;">
                                 <div class="form-group">
                                     {{ form.amount }}
                                     {% for err in form.amount.errors %}
