@@ -818,7 +818,7 @@ def charge():
 @home.route('/job/list/<int:page>/', methods=["GET"])
 @is_login_req
 @home_auth
-def job_list(page):
+def job_list(page=None):
     """
     任务日志列表
     """
@@ -839,7 +839,7 @@ def job_list(page):
         TaskList.create_time.desc()  # 倒序
     ).all()  # page当前页 per_page 分页显示多少条
 
-    print(task_data)
+    #print(task_data)
 
     return render_template('home/job_list.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
 
