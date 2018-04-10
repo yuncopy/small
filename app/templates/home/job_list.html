@@ -1,4 +1,5 @@
 {% extends 'home/home.html' %}
+
 {% import "common/page.html" as paginate_page %}
 
 {% block css %}
@@ -287,9 +288,9 @@
     <script src="{{ url_for('static',filename='vendors/pnotify/dist/pnotify.buttons.js') }}"></script>
     <script>
 
-        var task_func =function (id,task,ob) {
+        var task_func =function (id,tasks,ob) {
             var content = $(ob).attr('data-text');
-            $.post({{ url_for('home.task') }},{id:id,task:task},function (data) {
+            $.post({{ url_for('home.task') }},{id:id,task:tasks},function (data) {
                 if(data.status==200){
                      new PNotify({
                         title: '操作提示',

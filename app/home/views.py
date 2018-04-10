@@ -832,12 +832,12 @@ def job_list(page=None):
         page = 1
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
-    ).paginate(page=page, per_page=6)  # page当前页 per_page 分页显示多少条
+    ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
 
     # 任务列表
     task_data = TaskList.query.order_by(
         TaskList.create_time.desc()  # 倒序
-    ).all()  # page当前页 per_page 分页显示多少条
+    ).all()
 
     #print(task_data)
 
