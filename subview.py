@@ -2,10 +2,41 @@
 __author__ = 'Angela'
 __date__ = '2018年3月15日15:39:44'
 
+
 from app import app,scheduler
 
+
 class Config(object):
-    JOBS = []
+    """
+    定时任务配置
+    """
+    JOBS = [
+        {
+            'id': 'job_es_hour',
+            'func': 'app.home.jobs:job_es_hour',
+            'args': (3, 4),
+            'trigger': 'cron',
+            'second': '1',
+            'minute': '30',  # */5   每5分钟
+            'hour': '0-23'
+        },
+        {
+            'id': 'job_del_hour',
+            'func': 'app.home.jobs:job_del_hour',
+            'args': (1, 2),
+            'trigger': 'cron',
+            'second': '1',
+            'minute': '1',
+            'hour': '2'
+        },
+        {
+            'id': 'job_task1',
+            'func': 'app.home.jobs:task1',
+            'args': (1, 2),
+            'trigger': 'interval',
+            'seconds': 2
+        }
+    ]
     SCHEDULER_API_ENABLED = True
 
 

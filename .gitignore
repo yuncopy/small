@@ -3,3 +3,5 @@ app/static/tpl
 app/static/uploads
 app/__init__.py
 venv
+*.log
+*.pid
