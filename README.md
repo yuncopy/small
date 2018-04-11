@@ -14,8 +14,9 @@
 - 数据库配置信息 `/application/sub_view/sub_view/app/__init__.py`
 
 ### 注意事项
-- 注意定时任务配置
-- 已部署自助发布平台
+- 定时任务配置在入口文件中
+- 已申请部署自助发布权限
+- 区分生产环境配置文件
 
 
 
@@ -26,23 +27,5 @@
 - uwsgi --reload uwsgi.pid  //可以无缝重启服务 
 
 
-### 指定加载配置
-- uwsgi --ini uwsgi.ini:dev
-```
-[uwsgi]
-# This will load the app1 section below
-ini = :app1
-# This will load the defaults.ini file
-ini = defaults.ini
-# This will load the app2 section from the defaults.ini file!
-ini = :app2
-
-[pro]
-plugin = rack
-
-[dev]
-plugin = php
-
-```
 
  
