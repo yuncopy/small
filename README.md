@@ -23,4 +23,26 @@
 - uwsgi --ini uwsgi.ini  //后台运行启动 
 - uwsgi  uwsgi.ini --deamonize //后台运行启动   
 - uwsgi --stop uwsgi.pid  //停止服务   
-- uwsgi --reload uwsgi.pid  //可以无缝重启服务  
+- uwsgi --reload uwsgi.pid  //可以无缝重启服务 
+
+
+### 指定加载配置
+- uwsgi --ini uwsgi.ini:dev
+```
+[uwsgi]
+# This will load the app1 section below
+ini = :app1
+# This will load the defaults.ini file
+ini = defaults.ini
+# This will load the app2 section from the defaults.ini file!
+ini = :app2
+
+[pro]
+plugin = rack
+
+[dev]
+plugin = php
+
+```
+
+ 
