@@ -26,6 +26,9 @@
 - uwsgi --stop uwsgi.pid  //停止服务   
 - uwsgi --reload uwsgi.pid  //可以无缝重启服务 
 
+### 生产环境相关
+- /application/python-3.6.5/bin/uwsgi --ini subview.ini
+
 
 
  

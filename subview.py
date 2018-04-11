@@ -28,14 +28,8 @@ class Config(object):
             'second': '1',
             'minute': '1',
             'hour': '2'
-        },
-        {
-            'id': 'job_task1',
-            'func': 'app.home.jobs:task1',
-            'args': (1, 2),
-            'trigger': 'interval',
-            'seconds': 10
         }
+        #{'id': 'job_task1','func': 'app.home.jobs:task1','args': (1, 2),'trigger': 'interval','seconds': 10}
     ]
     SCHEDULER_API_ENABLED = True
 
