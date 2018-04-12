@@ -417,10 +417,10 @@ def real_time(time):
 
 
 
-@home.route("/bluecons/list/<int:page>/", methods=["GET","POST"])
+@home.route("/bluecoin/<int:page>/", methods=["GET","POST"])
 @is_login_req
 @home_auth
-def blue_coins(page=None):
+def bluecoin(page=None):
     """
     BlueCoins列表
     """
@@ -511,14 +511,18 @@ def blue_coins(page=None):
             except:
                 db.session.rollback()
                 flash("[{0}] [{1}]导出失败".format(amount, numbers), "err")
-            return redirect(url_for('home.blue_coins', page=1))
+            return redirect(url_for('home.bluecoin',page=1))
     else:
+
         if page is None:
             page = 1
         page_data = Bluecoins_log.query.order_by(
             Bluecoins_log.create_time.desc()
         ).paginate(page=page, per_page=10)
-    return render_template("home/bluecons_list.html", page_data=page_data,form=form)
+
+        print(page)
+
+    return render_template("home/bluecoin.html", page_data=page_data,form=form)
 
 
 
@@ -815,10 +819,10 @@ def charge():
 
 
 # 定时任务处理cdr_file 文件
-@home.route('/job/list/<int:page>/', methods=["GET"])
+@home.route("/backup/<int:page>/", methods=["GET"])
 @is_login_req
 @home_auth
-def job_list(page=None):
+def backup(page=None):
     """
     任务日志列表
     """
@@ -827,21 +831,30 @@ def job_list(page=None):
     form = JobForm()
     task = TaskForm()
 
+    # 任务列表
+    task_data = TaskList.query.order_by(
+        TaskList.create_time.desc()  # 倒序
+    ).all()
+
     # 任务日志
     if page is None:
         page = 1
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
     ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
+    print(page)
 
-    # 任务列表
-    task_data = TaskList.query.order_by(
-        TaskList.create_time.desc()  # 倒序
-    ).all()
 
-    #print(task_data)
+    # 删除数据
+    days_time_before = datetime.now() + timedelta(days=-7)
+    del_time_str = days_time_before.strftime("%Y-%m-%d")  # 获取当前小时
+    del_time = str(del_time_str + ' 23:59:59')
+    Backup_log.query.filter(
+        Backup_log.backup_time < del_time
+    ).delete()
+    db.session.commit()
 
-    return render_template('home/job_list.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
+    return render_template('home/backup.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
 
 
 @home.route('/jobs/', methods=["GET", "POST"])
@@ -934,7 +947,7 @@ def jobs():
             db.session.rollback()
             flash("[{0}] [{1}]操作失败".format(text, where), "err")
 
-    return redirect(url_for('home.job_list', page=1))
+    return redirect(url_for('home.backup', page=1))
 
 
 
@@ -971,7 +984,7 @@ def addtask():
             db.session.rollback()
             flash('添加任务失败，请严格按照格式输入！', 'err')
 
-    return redirect(url_for('home.job_list', page=1))
+    return redirect(url_for('home.backup', page=1))
     """
     #scheduler.add_job(func='app.home.jobs:task1', id='1', args=(1, 2), trigger='interval', seconds=5, replace_existing=True)
     data = dict(status=200,message='success')
