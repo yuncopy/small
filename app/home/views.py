@@ -522,7 +522,7 @@ def bluecoin(page=None):
 
         print(page)
 
-    return render_template("home/bluecoin.html", page_data=page_data,form=form)
+    return render_template("home/bluecoin.html", page_data=page_data,page=page,form=form)
 
 
 
@@ -854,7 +854,7 @@ def backup(page=None):
     ).delete()
     db.session.commit()
 
-    return render_template('home/backup.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
+    return render_template('home/backup.html', page_data=page_data,page=page,form=form,task=task,task_data=task_data)  # 权限管理
 
 
 @home.route('/jobs/', methods=["GET", "POST"])
@@ -947,7 +947,7 @@ def jobs():
             db.session.rollback()
             flash("[{0}] [{1}]操作失败".format(text, where), "err")
 
-    return redirect(url_for('home.backup', page=1))
+    return redirect(url_for('home.backup',page=1))
 
 
 
