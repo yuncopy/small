@@ -819,7 +819,7 @@ def charge():
 
 
 # 定时任务处理cdr_file 文件
-@home.route("/backup/<int:page>/", methods=["GET"])
+@home.route("/backup/<int:page>/", methods=["GET","POST"])
 @is_login_req
 @home_auth
 def backup(page=None):
@@ -829,20 +829,18 @@ def backup(page=None):
     # 获取数据表数据
 
     form = JobForm()
+    """
     task = TaskForm()
-
-    # 任务列表
     task_data = TaskList.query.order_by(
         TaskList.create_time.desc()  # 倒序
     ).all()
-
+    """
     # 任务日志
     if page is None:
         page = 1
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
     ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
-    print(page)
 
 
     # 删除数据
@@ -852,9 +850,10 @@ def backup(page=None):
     Backup_log.query.filter(
         Backup_log.backup_time < del_time
     ).delete()
+
     db.session.commit()
 
-    return render_template('home/backup.html', page_data=page_data,page=page,form=form,task=task,task_data=task_data)  # 权限管理
+    return render_template('home/backup.html', page_data=page_data,form=form)  # 权限管理
 
 
 @home.route('/jobs/', methods=["GET", "POST"])
