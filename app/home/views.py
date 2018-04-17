@@ -829,15 +829,17 @@ def backup(page=None):
     # 获取数据表数据
 
     form = JobForm()
-    """
-    task = TaskForm()
+    #task = TaskForm()
+
+    # 任务列表
     task_data = TaskList.query.order_by(
         TaskList.create_time.desc()  # 倒序
     ).all()
-    """
+
     # 任务日志
     if page is None:
         page = 1
+
     page_data = Backup_log.query.order_by(
         Backup_log.create_time.desc()  # 倒序
     ).paginate(page=page, per_page=10)  # page当前页 per_page 分页显示多少条
@@ -853,7 +855,7 @@ def backup(page=None):
 
     db.session.commit()
 
-    return render_template('home/backup.html', page_data=page_data,form=form)  # 权限管理
+    return render_template('home/backup.html', page_data=page_data,form=form,task=task,task_data=task_data)  # 权限管理
 
 
 @home.route('/jobs/', methods=["GET", "POST"])
@@ -1551,6 +1553,7 @@ def role_add():
             )
             db.session.add(role)
             db.session.commit()
+            session.pop("auth", None)  # 清除
             flash("添加[{0}]权限成功".format(data['name']), "ok")
         except:
             db.session.rollback()
@@ -1569,7 +1572,7 @@ def role_del(id):
     role = Role.query.filter_by(id=id).first_or_404()  # 查询记录是否存在
     db.session.delete(role)
     db.session.commit()
-
+    session.pop("auth", None)  # 清除
     flash("角色[{0}]删除成功".format(role.id), "ok")
     return redirect(url_for("home.role_list", page=1))
 
@@ -1596,6 +1599,7 @@ def role_edit(id):
             role.auths = ",".join(map(lambda v: str(v), auths))
             db.session.add(role)
             db.session.commit()
+            session.pop("auth", None) # 清除
             flash("权限[{0}]修改成功".format(role.id), "ok")
         except:
             db.session.rollback()
@@ -1674,6 +1678,5 @@ def logout():
     # 重定向到home模块下的登录。
     session.pop("admin", None)
     session.pop("admin_id", None)
-    session.pop("auth", None)
     flash('已安全退出。', 'ok')
     return redirect(url_for('home.login'))  # 退出跳转到登录界面
